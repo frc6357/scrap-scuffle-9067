@@ -54,6 +54,10 @@ public final class Konstants
         public static final Translation2d kBackLeftLocation = new Translation2d(-0.381, 0.381);
     }
 
+    public static final class IntakeConstants {
+        
+    }
+
     public static final class IOConstants {
         public static final double kJoystickDeadband = 0.15;
         public static final double kSlowModePercent  = 0.3;
