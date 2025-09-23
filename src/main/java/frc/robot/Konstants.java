@@ -38,11 +38,12 @@ public final class Konstants
     // }
 
     public static final class MecanumDriveConstants {
-        public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4.5);
+        public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(3.78);
 
         public static final double kMaxSpeed = kSpeedAt12Volts.in(MetersPerSecond);
         public static final double kMaxAngularSpeed = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
         public static final double kMaxAngularSpeedDegrees = RadiansPerSecond.of(kMaxAngularSpeed).in(DegreesPerSecond);
+        public static final double kWheelRadius = 0.106; // in meters
 
         public static final int kPigeonID = kPigeonPort.ID;
 
