@@ -3,99 +3,257 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+import static frc.robot.Ports.DriverPorts.kDriver;
+import static frc.robot.Ports.OperatorPorts.kOperator;
 
-import edu.wpi.first.wpilibj.TimedRobot;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+
+import au.grapplerobotics.CanBridge;
+import edu.wpi.first.net.WebServer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import com.ctre.phoenix6.Utils;
+import com.pathplanner.lib.commands.FollowPathCommand;
+
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.preferences.SKPreferences;
+import frc.robot.utils.files.Elastic;
+import frc.robot.utils.files.Elastic.Notification.NotificationLevel;
+
+// Unused Imports
+//import edu.wpi.first.wpilibj.TimedRobot;
 
 /**
- * The methods in this class are called automatically corresponding to each mode, as described in
- * the TimedRobot documentation. If you change the name of this class or the package after creating
- * this project, you must also update the Main.java file in the project.
+ * The VM is configured to automatically run this class, and to call the functions
+ * corresponding to each mode, as described in the TimedRobot documentation. If you change
+ * the name of this class or the package after creating this project, you must also update
+ * the build.gradle file in the project.
  */
-public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
+public class Robot extends LoggedRobot
+{
+    public static double matchTime;
 
-  private final RobotContainer m_robotContainer;
+    public static final double kDefaultPeriod = 0.2;
 
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
-  public Robot() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
-  }
+    private Command m_autonomousCommand;
 
-  /**
-   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
-   * that you want ran during disabled, autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
-   * SmartDashboard integrated updating.
-   */
-  @Override
-  public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
-    // block in order for anything in the Command-based framework to work.
-    CommandScheduler.getInstance().run();
-  }
+    private RobotContainer m_robotContainer;
 
-  /** This function is called once each time the robot enters Disabled mode. */
-  @Override
-  public void disabledInit() {}
+    SendableChooser<Command> autoCommandSelector = new SendableChooser<Command>();
 
-  @Override
-  public void disabledPeriodic() {}
+    boolean thirtySecondsReached = false;
 
-  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
-  @Override
-  public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    boolean rumbling = false;
 
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+    double time;
+
+    /**
+     * This function is run when the robot is first started up and should be used for any
+     * initialization code.
+     */
+    @Override
+    public void robotInit()
+    {
+        CanBridge.runTCP();
+        // Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
+        // Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);    //TODO: add this back, caused memory issue
+        // if (isReal()) {
+        //     Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+        //     Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+        //     new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+        // } else {
+        //     setUseTiming(false); // Run as fast as possible
+        //     String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+        //     Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+        //     Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+        // }
+
+        // Logger.start();
+        //DataLogManager.start(); TODO - look at data logs to see if they work with advantage scope
+        // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+        // autonomous chooser on the dashboard.
+        m_robotContainer = new RobotContainer();
+
+        //get the saved elastic dashboard layout
+        WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
+
+        kDriver.setRumble(RumbleType.kBothRumble, 0.0);
+        kOperator.setRumble(RumbleType.kBothRumble, 0.0);
+
+        FollowPathCommand.warmupCommand().schedule();
     }
-  }
 
-  /** This function is called periodically during autonomous. */
-  @Override
-  public void autonomousPeriodic() {}
+    /**
+     * This function is called every 20 ms, no matter the mode. Use this for items like
+     * diagnostics that you want ran during disabled, autonomous, teleoperated and test.
+     *
+     * <p>
+     * This runs after the mode specific periodic functions, but before LiveWindow and
+     * SmartDashboard integrated updating.
+     */
+    @Override
+    public void robotPeriodic()
+    {
+        // Logger.recordOutput("RobotPose", new Pose2d());
+        // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
+        // commands, running already-scheduled commands, removing finished or interrupted commands,
+        // and running subsystem periodic() methods.  This must be called from the robot's periodic
+        // block in order for anything in the Command-based framework to work.
+        CommandScheduler.getInstance().run();
+        
+        //display preferences periodicaly
+        SKPreferences.refreshIfNeeded();
 
-  @Override
-  public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+        //display real time memory consumption
+        SmartDashboard.putNumber("Memory", Runtime.getRuntime().freeMemory() / 1000000); //bytes to mb
+
+        // display match time
+        SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+
+        SmartDashboard.putNumber("IntMatchTime", ((Double)DriverStation.getMatchTime()).intValue());
     }
-  }
 
-  /** This function is called periodically during operator control. */
-  @Override
-  public void teleopPeriodic() {}
+    public void checkIfThirtySecondsLeft()
+    {
+        // DriverStation.reportError(String.valueOf(((Double)DriverStation.getMatchTime()).intValue()), false);
 
-  @Override
-  public void testInit() {
-    // Cancels all running commands at the start of test mode.
-    CommandScheduler.getInstance().cancelAll();
-  }
+        //time will be -1 if enabled in teleop directly. Works in practice mode on DS.
+        if (((Double)DriverStation.getMatchTime()).intValue() <= 30 && thirtySecondsReached == false)  //previously match time
+        {
+            
+            // DriverStation.reportError("CONDITION REACHED", false);
 
-  /** This function is called periodically during test mode. */
-  @Override
-  public void testPeriodic() {}
+            //dont let the notification send more than once
+            thirtySecondsReached = true;
 
-  /** This function is called once when the robot is first started up. */
-  @Override
-  public void simulationInit() {}
+            //send elastic notification that thirty seconds are left
+            Elastic.Notification timeToClimbNotification = new Elastic.Notification(
+                NotificationLevel.WARNING, 
+                "Time to Climb!", 
+                "There are thirty seconds left in the match."
+            );
+            //make the notification take up more of the screen
+            Elastic.sendNotification(timeToClimbNotification
+                .withDisplaySeconds(5.0)
+                .withWidth(500.0)
+                .withHeight(200.0)
+            );
 
-  /** This function is called periodically whilst in simulation. */
-  @Override
-  public void simulationPeriodic() {}
+            //controller rumble to alert driver and operator
+            kDriver.setRumble(RumbleType.kBothRumble, 0.5);
+            kOperator.setRumble(RumbleType.kBothRumble, 0.5);
+
+            rumbling = true;
+        }
+
+        if (DriverStation.getMatchTime() <= 29 && rumbling == true)
+            {
+                //stop rumble after 1 second
+                kDriver.setRumble(RumbleType.kBothRumble, 0.0);
+                kOperator.setRumble(RumbleType.kBothRumble, 0.0);
+
+                rumbling = false;
+
+                // DriverStation.reportError("RUMBLE STOPPED", false);
+            }
+    }
+
+    /** This function is called once each time the robot enters Disabled mode. */
+    @Override
+    public void disabledInit()
+    {
+    }
+
+    @Override
+    public void disabledPeriodic()
+    {
+    }
+
+    /**
+     * This autonomous runs the autonomous command selected by your {@link RobotContainer}
+     * class.
+     */
+    @Override
+    public void autonomousInit()
+    {
+        m_robotContainer.matchInit();
+        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+        /*
+         * String autoSelected = SmartDashboard.getString("Auto Selector", "Default");
+         * switch(autoSelected) { case "My Auto": autonomousCommand = new MyAutoCommand();
+         * break; case "Default Auto": default: autonomousCommand = new ExampleCommand();
+         * break; }
+         */
+
+        //schedule the autonomous command (example)
+        if (m_autonomousCommand != null)
+        {
+            m_autonomousCommand.schedule();
+        }
+
+        m_robotContainer.autonomousInit();
+    }
+
+    /** This function is called periodically during autonomous. */
+    @Override
+    public void autonomousPeriodic()
+    {
+    }
+
+    @Override
+    public void teleopInit()
+    {
+        // This makes sure that the autonomous stops running when
+        // teleop starts running. If you want the autonomous to
+        // continue until interrupted by another command, remove
+        // this line or comment it out.
+        if (m_autonomousCommand != null)
+        {
+            m_autonomousCommand.cancel();
+        }
+
+        m_robotContainer.teleopInit();
+
+        //ensure this value is reset before thirty seconds can ever be reached
+        thirtySecondsReached = false;
+    }
+
+    /** This function is called periodically during operator control. */
+    @Override
+    public void teleopPeriodic()
+    {
+        checkIfThirtySecondsLeft();
+    }
+
+    @Override
+    public void testInit()
+    {
+        // Cancels all running commands at the start of test mode.
+        CommandScheduler.getInstance().cancelAll();
+        m_robotContainer.testInit();
+    }
+
+    /** This function is called periodically during test mode. */
+    @Override
+    public void testPeriodic()
+    {
+        m_robotContainer.testPeriodic();
+
+        
+    }
+
+
 }

@@ -1,47 +1,46 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+// package frc.robot.subsystems;
 
-package frc.robot.subsystems;
+// import com.revrobotics.spark.SparkFlex;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+// import edu.wpi.first.wpilibj2.command.SubsystemBase;
+// import static frc.robot.Konstants.ExampleConstants.kExampleSpeed;
+// import static frc.robot.Ports.ExamplePorts.kExampleMotor;
+// import com.revrobotics.spark.SparkLowLevel.MotorType;
 
-public class ExampleSubsystem extends SubsystemBase {
-  /** Creates a new ExampleSubsystem. */
-  public ExampleSubsystem() {}
+// public class ExampleSubsystem extends SubsystemBase
+// {
+//     //declare a motor object of type CANSParkFlex
+//     SparkFlex motor;
 
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
-  public Command exampleMethodCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
-        () -> {
-          /* one-time action goes here */
-        });
-  }
+//     //constructor
+//     public ExampleSubsystem()
+//     {
+//         //initialize the new motor object with its motor ID and type
+//         motor = new SparkFlex(kExampleMotor.ID, MotorType.kBrushless);
+//     }
 
-  /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-   *
-   * @return value of some boolean subsystem state, such as a digital sensor.
-   */
-  public boolean exampleCondition() {
-    // Query some boolean state, such as a digital sensor.
-    return false;
-  }
+//     //runs the motor
+//     public void runMotor()
+//     {
+//         motor.set(kExampleSpeed);
+//     }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+//     //stops the motor
+//     public void stopMotor()
+//     {
+//         motor.stopMotor();
+//     }
 
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-  }
-}
+//     //occurs every 20 miliseconds, usually not tied to a command, binder, etc...
+//     public void periodic()
+//     {
+//     } 
+
+//     public void testInit()
+//     {
+//     }
+    
+//     public void testPeriodic()
+//     {
+//     }
+// }

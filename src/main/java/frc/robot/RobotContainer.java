@@ -4,13 +4,31 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import com.ctre.phoenix6.Utils;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.bindings.CommandBinder;
+import frc.robot.utils.SK25AutoBuilder;
+import frc.robot.utils.SubsystemControls;
+import frc.robot.utils.filters.FilteredJoystick;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -20,44 +38,138 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  // Make your list of subsystem containers here
+  // ex: public Optional<SKVision> m_visionContainer = Optional.empty();
+
+  // Then make static references to each subsystem you've added
+  // ex: public static SKVision m_vision;
+
+
+
+  // The list containing all the command binding classes
+  private List<CommandBinder> buttonBinders = new ArrayList<CommandBinder>();
+
+  // An option box on shuffleboard to choose the auto path
+  SendableChooser<Command> autoCommandSelector = new SendableChooser<Command>();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    // Creates all subsystems that are on the robot
+    configureSubsystems();
+
+    // sets up autos needed for pathplanner
+    configurePathPlannerCommands();
+
     // Configure the trigger bindings
-    configureBindings();
+    configureButtonBindings();
   }
 
   /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
-  private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
+     * Will create all the optional subsystems using the json file in the deploy directory
+     */
+    private void configureSubsystems()
+    {
+        File deployDirectory = Filesystem.getDeployDirectory();
 
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-  }
+        ObjectMapper mapper = new ObjectMapper();
+        JsonFactory factory = new JsonFactory();
+
+        try
+        {
+            // Looking for the Subsystems.json file in the deploy directory
+            JsonParser parser =
+                    factory.createParser(new File(deployDirectory, Konstants.SUBSYSTEMFILE));
+            SubsystemControls subsystems = mapper.readValue(parser, SubsystemControls.class);
+
+            // ex:
+            // if(subsystems.isVisionPresent())
+            // {
+            //     m_visionContainer = Optional.of(new SKVision());
+            //     m_vision = m_visionContainer.get();
+            // }
+        }
+        catch (IOException e)
+        {
+            DriverStation.reportError("Failure to read Subsystem Control File!", e.getStackTrace());
+        }
+    }
 
   /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
-  }
+     * Use this method to define your button->command mappings. Buttons can be created by
+     * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its subclasses
+     * ({@link edu.wpi.first.wpilibj.Joystick} or {@link FilteredJoystick}), and then
+     * calling passing it to a {@link JoystickButton}.
+     */
+    private void configureButtonBindings()
+    {
+
+        // ex: buttonBinders.add(new SKVisionBinder(m_visionContainer))
+        // Note: if your subsystem binder interacts/controls other subsystems, you can add its 
+        //       respective container reference into the binder constructor.
+        // ex: buttonBinders.add(new SKVisionBinder(m_visionContainer, m_driveContainer, m_launcherContainer))
+
+
+        // Traversing through all the binding classes to actually bind the buttons
+        for (CommandBinder subsystemGroup : buttonBinders)
+        {
+            subsystemGroup.bindButtons();
+        }
+
+    }
+
+    private void configurePathPlannerCommands()
+    {
+        // Always check to see if the drivetrain is present for auto
+        // It's kinda useless to create autonomous commands if there's no drivebase
+        // to move the robot around the field...
+
+        /* ex:
+         * Nest the other subsystem checking if-statements inside the drivetrain if-statement
+         * 
+         * if(m_driveContainer.isPresent()) {
+         *      if(m_launcherContainer.isPresent()) {
+         *            // This line configures a launching command to be used in autonomous and feeds in
+         *            // a medium motor speed value
+         *            NamedCommands.registerCommand("RunLauncherMediumCommand", new RunLauncherCommand(kMediumSpeed));
+         *      }
+         * }
+         */
+    }
+
+  /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     * <p>
+     * This method loads the auto when it is called, however, it is recommended
+     * to first load your paths/autos when code starts, then return the
+     * pre-loaded auto/path.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand()
+    {
+        return Commands.sequence(Commands.waitSeconds(0.01), autoCommandSelector.getSelected());
+    }
+
+    public void testPeriodic(){
+
+    }
+    public void testInit(){
+
+    }
+
+    public void matchInit()
+    {
+    
+    }
+
+    public void teleopInit()
+    {
+       
+    }
+    public void autonomousInit()
+    {
+     
+    }
 }
