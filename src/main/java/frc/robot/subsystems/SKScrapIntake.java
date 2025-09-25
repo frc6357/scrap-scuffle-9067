@@ -28,6 +28,13 @@ public class SKScrapIntake extends SubsystemBase{
      * @param speed The speed to run the motor at
      */
     public void runIntake(double speed) {
+        
+    }
+
+    /**
+     * Stops the intake motor
+     */
+    public void stopIntake() {
 
     }
 

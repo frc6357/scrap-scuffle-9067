@@ -54,7 +54,9 @@ public class Ports
         //public static final FilteredAxis kExampleRawAxis = new FilteredAxis(() -> kOperator.getRawAxis(kLeftY.value));
         
         //ExampleButton
-        public static final SKTrigger kExampleButton = new SKTrigger(kOperator, kY.value, BUTTON);
+        // public static final SKTrigger kExampleButton = new SKTrigger(kOperator, kY.value, BUTTON);
+
+        public static final SKTrigger kIntakeTrigger = new SKTrigger(kOperator, kX.value, BUTTON);
     }
 
     /**
