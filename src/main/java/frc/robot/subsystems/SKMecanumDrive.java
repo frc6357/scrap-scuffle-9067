@@ -34,7 +34,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 
 public class SKMecanumDrive extends SubsystemBase {
-    Pigeon2 m_pigeon;
+    public static Pigeon2 m_pigeon;
     // Creating kinematics object using the wheel locations.
     MecanumDriveKinematics m_kinematics;
     MecanumDriveOdometry m_odometry;

@@ -1,10 +1,16 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static frc.robot.Ports.DrivePorts.kPigeonPort;
+
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -52,6 +58,19 @@ public final class Konstants
         public static final Translation2d kFrontRightLocation = new Translation2d(0.381, -0.381);
         public static final Translation2d kBackRightLocation = new Translation2d(-0.381, -0.381);
         public static final Translation2d kBackLeftLocation = new Translation2d(-0.381, 0.381);
+    }
+
+    public static final class TurretConstants {
+        public static final SparkMaxConfig turretConfig = new SparkMaxConfig();
+
+        static {
+            turretConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(50);
+
+            turretConfig.inverted(false)
+            .closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).p(0.05).outputRange(-1, 1)
+            .maxMotion.maxVelocity(4000).maxAcceleration(5500)
+            .allowedClosedLoopError(Degrees.of(2.5).in(Rotations));
+        }
     }
 
     public static final class IOConstants {

@@ -89,6 +89,12 @@ public class Ports
         public static final CANPort kPigeonPort = new CANPort(25, busName);
     }
 
+    public static class TurretPorts {
+        private static String busName = "";
+
+        public static final CANPort kTurretMotorPort = new CANPort(2, busName);
+    }
+
 
     // public static class ExamplePorts
     // {
