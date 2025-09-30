@@ -5,7 +5,7 @@ import java.util.Optional;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.RunScrapIntakeCommand;
 import frc.robot.subsystems.SKScrapIntake;
-import static frc.robot.Ports.OperatorPorts.kIntakeTrigger;
+import static frc.robot.Ports.OperatorPorts.kScrapIntakeTrigger;
 
 public class SKScrapIntakeBinder implements CommandBinder{
     Optional<SKScrapIntake> m_intakeContainer;
@@ -16,7 +16,7 @@ public class SKScrapIntakeBinder implements CommandBinder{
     public SKScrapIntakeBinder(Optional<SKScrapIntake> m_intakeContainer) {
         this.m_intakeContainer = m_intakeContainer;
 
-        intakeTrigger = kIntakeTrigger.button;
+        intakeTrigger = kScrapIntakeTrigger.button;
     }
 
     @Override

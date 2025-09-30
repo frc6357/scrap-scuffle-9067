@@ -11,13 +11,13 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Ports.IntakePorts.kIntakeMotorPort;
 
-public class SKScrapIntake extends SubsystemBase{
+public class SKSalvageIntake extends SubsystemBase{
 
     SparkMax motor = new SparkMax(kIntakeMotorPort.ID, MotorType.kBrushless);
     SparkBaseConfig motorConfig;
 
-    public SKScrapIntake() {
-        motorConfig.inverted(false).idleMode(IdleMode.kCoast).smartCurrentLimit(50);
+    public SKSalvageIntake() {
+        motorConfig.inverted(false).idleMode(IdleMode.kBrake).smartCurrentLimit(50);
         motorConfig.openLoopRampRate(0.2);
 
         motor.configure(motorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
