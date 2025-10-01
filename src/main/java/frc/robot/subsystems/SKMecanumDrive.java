@@ -15,26 +15,30 @@ import static frc.robot.Konstants.MecanumDriveConstants.kFrontLeftLocation;
 import static frc.robot.Konstants.MecanumDriveConstants.kFrontRightLocation;
 import static frc.robot.Konstants.MecanumDriveConstants.kMaxSpeed;
 import static frc.robot.Konstants.MecanumDriveConstants.kWheelRadius;
+import static frc.robot.Konstants.MecanumDriveConstants.driveMotorPIDConfig;
 import static frc.robot.Konstants.MecanumDriveConstants.kBackLeftLocation;
 import static frc.robot.Konstants.MecanumDriveConstants.kBackRightLocation;
+import static frc.robot.Ports.DrivePorts.kFrontLeftDriveMotorPort;
+import static frc.robot.Ports.DrivePorts.kFrontRightDriveMotorPort;
 import static frc.robot.Ports.DrivePorts.kPigeonPort;
+import static frc.robot.Ports.DrivePorts.kRearLeftDriveMotorPort;
+import static frc.robot.Ports.DrivePorts.kRearRightDriveMotorPort;
 
 import java.util.function.DoubleConsumer;
 
-import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.ctre.phoenix6.hardware.Pigeon2;
-import com.ctre.phoenix6.hardware.TalonFX;
 
 
 public class SKMecanumDrive extends SubsystemBase {
-    Pigeon2 m_pigeon;
+    static Pigeon2 m_pigeon = new Pigeon2(kPigeonPort.ID, kPigeonPort.bus);
     // Creating kinematics object using the wheel locations.
     MecanumDriveKinematics m_kinematics;
     MecanumDriveOdometry m_odometry;
@@ -43,35 +47,29 @@ public class SKMecanumDrive extends SubsystemBase {
     DoubleConsumer frontRight = speed -> setFrontRight(speed);
     DoubleConsumer backLeft = speed -> setBackLeft(speed);
     DoubleConsumer backRight = speed -> setBackRight(speed);
-    SparkMax frontLeftMotor;
-    SparkMax frontRightMotor;
-    SparkMax backLeftMotor;
-    SparkMax backRightMotor;
+    SparkMax frontLeftMotor = new SparkMax(kFrontLeftDriveMotorPort.ID, MotorType.kBrushless);
+    SparkMax frontRightMotor = new SparkMax(kFrontRightDriveMotorPort.ID, MotorType.kBrushless);
+    SparkMax backLeftMotor = new SparkMax(kRearLeftDriveMotorPort.ID, MotorType.kBrushless);
+    SparkMax backRightMotor = new SparkMax(kRearRightDriveMotorPort.ID, MotorType.kBrushless);
     SparkMaxConfig fLConfig;
     SparkMaxConfig fRConfig;
     SparkMaxConfig bLConfig;
     SparkMaxConfig bRConfig;
 
 
-    public SKMecanumDrive(
-        SparkMax frontLeftMotor, SparkMax frontRightMotor,
-        SparkMax backLeftMotor, SparkMax backRightMotor
-        ) 
+    public SKMecanumDrive() 
         {
-        this.frontLeftMotor = frontLeftMotor; this.frontRightMotor = frontRightMotor;
-        this.backLeftMotor = backLeftMotor; this.backRightMotor = backRightMotor;
 
-        fLConfig.idleMode(IdleMode.kCoast).inverted(false).openLoopRampRate(0.4).smartCurrentLimit(40, 50);
-        fRConfig.idleMode(IdleMode.kCoast).inverted(false).openLoopRampRate(0.4).smartCurrentLimit(40, 50);
-        bLConfig.idleMode(IdleMode.kCoast).inverted(false).openLoopRampRate(0.4).smartCurrentLimit(40, 50);
-        bRConfig.idleMode(IdleMode.kCoast).inverted(false).openLoopRampRate(0.4).smartCurrentLimit(40, 50);
+        fLConfig.idleMode(IdleMode.kCoast).inverted(false).openLoopRampRate(0.4).smartCurrentLimit(40, 50).apply(driveMotorPIDConfig);
+        fRConfig.idleMode(IdleMode.kCoast).inverted(false).openLoopRampRate(0.4).smartCurrentLimit(40, 50).apply(driveMotorPIDConfig);
+        bLConfig.idleMode(IdleMode.kCoast).inverted(false).openLoopRampRate(0.4).smartCurrentLimit(40, 50).apply(driveMotorPIDConfig);
+        bRConfig.idleMode(IdleMode.kCoast).inverted(false).openLoopRampRate(0.4).smartCurrentLimit(40, 50).apply(driveMotorPIDConfig);
 
         this.frontLeftMotor.configure(fLConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
         this.frontRightMotor.configure(fRConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
         this.backLeftMotor.configure(bLConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
         this.backRightMotor.configure(bRConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
-        m_pigeon = new Pigeon2(kPigeonPort.ID, kPigeonPort.bus);
         m_pigeon.reset();
 
         m_kinematics = new MecanumDriveKinematics(
@@ -164,15 +162,27 @@ public class SKMecanumDrive extends SubsystemBase {
     }
 
     private void setFrontLeft(double speed) {
-        frontLeftMotor.set(speed/kMaxSpeed); // Divides by maximum linear speed to find the percentage to pass into the set() method
+        // Convert from linear speed in m/s to RPM
+        speed = speed / kWheelRadius; // ω = v/r
+        speed *= 60; // Rev/s -> RPM
+        frontLeftMotor.getClosedLoopController().setReference(speed, ControlType.kVelocity);
     }
     private void setFrontRight(double speed) {
-        
+        // Convert from linear speed in m/s to RPM
+        speed = speed / kWheelRadius; // ω = v/r
+        speed *= 60; // Rev/s -> RPM
+        frontRightMotor.getClosedLoopController().setReference(speed, ControlType.kVelocity);
     }
     private void setBackLeft(double speed) {
-        
+        // Convert from linear speed in m/s to RPM
+        speed = speed / kWheelRadius; // ω = v/r
+        speed *= 60; // Rev/s -> RPM
+        backLeftMotor.getClosedLoopController().setReference(speed, ControlType.kVelocity);
     }
     private void setBackRight(double speed) {
-
+        // Convert from linear speed in m/s to RPM
+        speed = speed / kWheelRadius; // ω = v/r
+        speed *= 60; // Rev/s -> RPM
+        backRightMotor.getClosedLoopController().setReference(speed, ControlType.kVelocity);
     }
 }
