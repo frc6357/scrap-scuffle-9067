@@ -9,13 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class SubsystemControls
 {
 
-    private final boolean swerve;
-    private final boolean lights;
-    private final boolean elevator;
-    private final boolean endEffector;
-    private final boolean climb;
-    private final boolean coralSubsystem;
-    private final boolean vision;
+    private final boolean mecanum;
+    private final boolean turret;
 
      /**  
      * @param swerve
@@ -24,22 +19,12 @@ public class SubsystemControls
      *            indicates if the lights subsystem is present and should be enabled
      */
     public SubsystemControls(
-        @JsonProperty(required = true, value = "swerve")      boolean swerve,
-        @JsonProperty(required = true, value = "lights")      boolean lights,
-        @JsonProperty(required = true, value = "elevator")    boolean elevator,
-        @JsonProperty(required = true, value = "endeffector") boolean endeffector,
-        @JsonProperty(required = true, value = "climb") boolean climb,
-        @JsonProperty(required = true, value = "coralSubsystem") boolean coralSubsystem,
-        @JsonProperty(required = true, value = "vision")      boolean vision
+        @JsonProperty(required = true, value = "mecanum")      boolean mecanum,
+        @JsonProperty(required = true, value = "turret")      boolean turret
     )
     {
-        this.swerve = swerve;
-        this.lights = lights;
-        this.elevator = elevator;
-        this.endEffector = endeffector;
-        this.climb = climb;
-        this.coralSubsystem = coralSubsystem;
-        this.vision = vision;
+        this.mecanum = mecanum;
+        this.turret = turret;
     }
 
 
@@ -49,29 +34,10 @@ public class SubsystemControls
      * @return true if the drive subsystem is indicated as present and should be enabled; false
      *         otherwise
      */
-    public boolean isSwervePresent()
-    {
-        return swerve;
+    public boolean isMecanumPresent() {
+        return mecanum;
     }
-    public boolean isVisionPresent() {
-        return vision;
-    }
-    public boolean isEndEffectorPresent()
-    {
-        return endEffector;
-    } 
-    public boolean isClimbPresent() 
-    {
-        return climb;
-    }
-    public boolean isCoralSubsystemPresent() 
-    {
-        return coralSubsystem;
-    }
-    public boolean isLightsPresent() {
-        return lights;
-    }
-    public boolean isElevatorPresent() {
-        return elevator;
+    public boolean isTurretPresent() {
+        return turret;
     }
 }

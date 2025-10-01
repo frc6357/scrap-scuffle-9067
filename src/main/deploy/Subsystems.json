@@ -1,9 +1,4 @@
 {
-    "swerve": true,
-    "endeffector": true,
-    "lights": false,
-    "elevator": false,
-    "climb": true,
-    "coralSubsystem" : true,
-    "vision": true
+    "mecanum": true,
+    "turret": true
 }

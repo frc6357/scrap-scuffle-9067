@@ -16,27 +16,30 @@ import static frc.robot.Ports.TurretPorts.kTurretMotorPort;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.Field;
 
-public class SKTurret extends SubsystemBase {
+public class SP25Turret extends SubsystemBase {
     private SparkMax turretMotor = new SparkMax(kTurretMotorPort.ID, MotorType.kBrushless);
     private SparkClosedLoopController pidController = turretMotor.getClosedLoopController();
     private RelativeEncoder encoder = turretMotor.getEncoder();
-    private double currentPosition;
     private Rotation2d targetRotation = Rotation2d.kZero;
     private Supplier<Rotation2d> pigeon = () -> (SKMecanumDrive.m_pigeon.getRotation2d());
     private Supplier<Double> turretAngle = () -> (Rotations.of(encoder.getPosition()).in(Degrees));
 
-    public SKTurret() {
+    public SP25Turret() {
         turretMotor.configure(turretConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
         
         encoder.setPosition(0);
+
+        this.setDefaultCommand(new InstantCommand(() -> resetFieldRelativeAngle(), this));
     }
 
     @Override
     public void periodic() {
-        setAngleDegrees(pigeon.get().unaryMinus().plus(targetRotation).getDegrees());
+        SmartDashboard.putNumber("Turret Target", targetRotation.getDegrees());
     }
 
     public void resetEncoder() {

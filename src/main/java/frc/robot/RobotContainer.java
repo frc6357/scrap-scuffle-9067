@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.bindings.CommandBinder;
 import frc.robot.bindings.SKMecanumBinder;
 import frc.robot.subsystems.SKMecanumDrive;
-import frc.robot.subsystems.SKTurret;
+import frc.robot.subsystems.SP25Turret;
 import frc.robot.utils.SK25AutoBuilder;
 import frc.robot.utils.SubsystemControls;
 import frc.robot.utils.filters.FilteredJoystick;
@@ -46,13 +46,13 @@ public class RobotContainer {
   // ex: public Optional<SKVision> m_visionContainer = Optional.empty();
 
   public Optional<SKMecanumDrive> m_driveContainer = Optional.empty();
-  public Optional<SKTurret> m_turretContainer = Optional.empty();
+  public Optional<SP25Turret> m_turretContainer = Optional.empty();
 
   // Then make static references to each subsystem you've added
   // ex: public static SKVision m_vision;
 
   public static SKMecanumDrive m_drive;
-  public static SKTurret m_turret;
+  public static SP25Turret m_turret;
 
   // The list containing all the command binding classes
   private List<CommandBinder> buttonBinders = new ArrayList<CommandBinder>();
@@ -96,6 +96,10 @@ public class RobotContainer {
             //     m_visionContainer = Optional.of(new SKVision());
             //     m_vision = m_visionContainer.get();
             // }
+
+            if(subsystems.isTurretPresent()) {
+                m_turretContainer = Optional.of(new SP25Turret());
+            }
         }
         catch (IOException e)
         {
