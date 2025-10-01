@@ -8,6 +8,8 @@ import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.motorcontrol.PWMMotorController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,6 +20,7 @@ import static frc.robot.Konstants.MecanumDriveConstants.kWheelRadius;
 import static frc.robot.Konstants.MecanumDriveConstants.driveMotorPIDConfig;
 import static frc.robot.Konstants.MecanumDriveConstants.kBackLeftLocation;
 import static frc.robot.Konstants.MecanumDriveConstants.kBackRightLocation;
+import static frc.robot.Konstants.AutoConstants.pathConfig;
 import static frc.robot.Ports.DrivePorts.kFrontLeftDriveMotorPort;
 import static frc.robot.Ports.DrivePorts.kFrontRightDriveMotorPort;
 import static frc.robot.Ports.DrivePorts.kPigeonPort;
@@ -35,6 +38,8 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.RobotConfig;
 
 
 public class SKMecanumDrive extends SubsystemBase {
@@ -83,6 +88,8 @@ public class SKMecanumDrive extends SubsystemBase {
             getWheelPositions(),
             new Pose2d(0.0, 0.0, new Rotation2d())
         );
+
+        configureAutoBuilder();
     }
 
     @Override
@@ -151,6 +158,20 @@ public class SKMecanumDrive extends SubsystemBase {
         m_odometry.resetPose(pose);
     }
 
+    public Pose2d getRobotPose() {
+        return m_odometry.getPoseMeters();
+    }
+
+    private ChassisSpeeds getChassisSpeeds() {
+        MecanumDriveWheelSpeeds wheelSpeeds = new MecanumDriveWheelSpeeds(
+            frontLeftMotor.getEncoder().getVelocity() * kWheelRadius,
+            frontRightMotor.getEncoder().getVelocity() * kWheelRadius,
+            backLeftMotor.getEncoder().getVelocity() * kWheelRadius,
+            backRightMotor.getEncoder().getVelocity() * kWheelRadius
+        );
+        return m_kinematics.toChassisSpeeds(wheelSpeeds);
+    }
+
     /**
      * Returns the meters travelled from a wheel motor by multiplying the number of rotations
      * by 2Pi to convert to radians, then multiplying the radians by the radius of the wheel in meters
@@ -184,5 +205,25 @@ public class SKMecanumDrive extends SubsystemBase {
         speed = speed / kWheelRadius; // ω = v/r
         speed *= 60; // Rev/s -> RPM
         backRightMotor.getClosedLoopController().setReference(speed, ControlType.kVelocity);
+    }
+
+    private void configureAutoBuilder() {
+        try {
+            var config = RobotConfig.fromGUISettings();
+            AutoBuilder.configure(
+                this::getRobotPose,   // Supplier of current robot pose
+                this::resetPose,         // Consumer for seeding pose against auto
+                this::getChassisSpeeds, // Supplier of current robot speeds
+                // Consumer of ChassisSpeeds and feedforwards to drive the robot
+                (speeds, feedforwards) -> setControl(speeds),
+                pathConfig,
+                config,
+                // Assume the path needs to be flipped for Red vs Blue, this is normally the case
+                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+                this // Subsystem for requirements
+            );
+        } catch (Exception ex) {
+            DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
+        }
     }
 }

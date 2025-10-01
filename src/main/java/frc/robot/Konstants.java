@@ -7,6 +7,8 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static frc.robot.Ports.DrivePorts.kPigeonPort;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
@@ -62,6 +64,15 @@ public final class Konstants
         public static final Translation2d kFrontRightLocation = new Translation2d(0.381, -0.381);
         public static final Translation2d kBackRightLocation = new Translation2d(-0.381, -0.381);
         public static final Translation2d kBackLeftLocation = new Translation2d(-0.381, 0.381);
+    }
+
+    public static final class AutoConstants
+    {
+        // PID Constants
+        public static final PIDConstants kTranslationPIDConstants = new PIDConstants(6, 0, 0);
+        public static final PIDConstants kRotationPIDConstants    = new PIDConstants(6, 0.4, 0);
+
+        public static final PPHolonomicDriveController pathConfig = new PPHolonomicDriveController(kTranslationPIDConstants, kRotationPIDConstants);
     }
 
     public static final class IOConstants {
