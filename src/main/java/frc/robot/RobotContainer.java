@@ -26,6 +26,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.bindings.CommandBinder;
+import frc.robot.commands.RunSalvageIntakeCommand;
+import frc.robot.subsystems.SKMecanumDrive;
+import frc.robot.subsystems.SKSalvageIntake;
+import frc.robot.subsystems.SKScrapIntake;
 import frc.robot.utils.SK25AutoBuilder;
 import frc.robot.utils.SubsystemControls;
 import frc.robot.utils.filters.FilteredJoystick;
@@ -42,10 +46,16 @@ public class RobotContainer {
   // Make your list of subsystem containers here
   // ex: public Optional<SKVision> m_visionContainer = Optional.empty();
 
+  public Optional<SKMecanumDrive> m_driveContainer = Optional.empty();
+  public Optional<SKScrapIntake> m_scrapIntakeContainer = Optional.empty();
+  public Optional<SKSalvageIntake> m_salvageIntakeContainer = Optional.empty();
+
+
   // Then make static references to each subsystem you've added
   // ex: public static SKVision m_vision;
 
-
+  public static SKScrapIntake m_scrapIntake;
+  public static SKSalvageIntake m_salvageIntake;
 
   // The list containing all the command binding classes
   private List<CommandBinder> buttonBinders = new ArrayList<CommandBinder>();
@@ -136,6 +146,12 @@ public class RobotContainer {
          *      }
          * }
          */
+
+        if(m_driveContainer.isPresent()) {            
+            if(m_salvageIntakeContainer.isPresent()) {
+                NamedCommands.registerCommand("RunSalvageIntakeCommand", new RunSalvageIntakeCommand(m_salvageIntake));
+            }
+        }
     }
 
   /**
