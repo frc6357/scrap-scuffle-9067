@@ -164,6 +164,8 @@ public class SKMecanumDrive extends SubsystemBase {
 
     private ChassisSpeeds getChassisSpeeds() {
         MecanumDriveWheelSpeeds wheelSpeeds = new MecanumDriveWheelSpeeds(
+            // Convert from the motor's rotational velocity to linear velocity by multiplying
+            // by wheel radius
             frontLeftMotor.getEncoder().getVelocity() * kWheelRadius,
             frontRightMotor.getEncoder().getVelocity() * kWheelRadius,
             backLeftMotor.getEncoder().getVelocity() * kWheelRadius,
