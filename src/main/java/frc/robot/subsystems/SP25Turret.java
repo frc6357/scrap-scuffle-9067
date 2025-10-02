@@ -59,6 +59,7 @@ public class SP25Turret extends SubsystemBase {
     }
     
     public void setAngleDegrees(double targetAngle) {
+        // Get the turret's current angle in degrees
         double currentAngle = turretAngle.get();
 
         // "If the sign of the current angle and target angle aren't opposite"
