@@ -52,6 +52,8 @@ public class Ports
 
         //Example of rawAxis values (Joysticks on the controller)
         //public static final FilteredAxis kExampleRawAxis = new FilteredAxis(() -> kOperator.getRawAxis(kLeftY.value));
+
+        public static final SKTrigger kLauncherTrigger = new SKTrigger(kOperator, kRightTrigger.value, AXIS);
         
         //ExampleButton
         public static final SKTrigger kExampleButton = new SKTrigger(kOperator, kY.value, BUTTON);
@@ -87,6 +89,12 @@ public class Ports
         
         // CAN ID for IMU
         public static final CANPort kPigeonPort = new CANPort(25, busName);
+    }
+
+    public static class LauncherPorts {
+        private static String busName = "";
+
+        public static CANPort kLauncherMotorPort = new CANPort(4, busName);
     }
 
 

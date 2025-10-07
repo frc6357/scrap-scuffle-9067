@@ -6,6 +6,8 @@ package frc.robot;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OptionalDataException;
+import java.lang.StackWalker.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +28,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.bindings.CommandBinder;
-import frc.robot.utils.SK25AutoBuilder;
+import frc.robot.bindings.SKLauncherBinder;
+import frc.robot.commands.RunLauncherCommand;
+import frc.robot.commands.RunLauncherCommandContinuous;
+import frc.robot.commands.StopLauncherCommand;
+import frc.robot.subsystems.SKLauncher;
 import frc.robot.utils.SubsystemControls;
 import frc.robot.utils.filters.FilteredJoystick;
 
@@ -41,9 +47,11 @@ public class RobotContainer {
 
   // Make your list of subsystem containers here
   // ex: public Optional<SKVision> m_visionContainer = Optional.empty();
+  public Optional<SKLauncher> m_launcherContainer = Optional.empty();
 
   // Then make static references to each subsystem you've added
   // ex: public static SKVision m_vision;
+  public static SKLauncher m_launcher;
 
 
 
@@ -89,6 +97,11 @@ public class RobotContainer {
             //     m_visionContainer = Optional.of(new SKVision());
             //     m_vision = m_visionContainer.get();
             // }
+
+            if(subsystems.isLauncherPresent()) {
+                m_launcherContainer = Optional.of(new SKLauncher());
+                m_launcher = m_launcherContainer.get();
+            }
         }
         catch (IOException e)
         {
@@ -110,6 +123,7 @@ public class RobotContainer {
         //       respective container reference into the binder constructor.
         // ex: buttonBinders.add(new SKVisionBinder(m_visionContainer, m_driveContainer, m_launcherContainer))
 
+        buttonBinders.add(new SKLauncherBinder(m_launcherContainer));
 
         // Traversing through all the binding classes to actually bind the buttons
         for (CommandBinder subsystemGroup : buttonBinders)
@@ -136,6 +150,12 @@ public class RobotContainer {
          *      }
          * }
          */
+
+         if(m_launcherContainer.isPresent()) {
+            NamedCommands.registerCommand("RunLauncherCommand70Pct", new RunLauncherCommand(m_launcher, 0.7));
+            NamedCommands.registerCommand("RunLauncherContinuous70Pct", new RunLauncherCommandContinuous(m_launcher, 0.7));
+            NamedCommands.registerCommand("StopLauncherCommand", new StopLauncherCommand(m_launcher));
+         }
     }
 
   /**
