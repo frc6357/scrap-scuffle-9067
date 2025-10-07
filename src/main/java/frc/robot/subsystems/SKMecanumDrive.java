@@ -17,6 +17,7 @@ import static frc.robot.Konstants.MecanumDriveConstants.kMaxSpeed;
 import static frc.robot.Konstants.MecanumDriveConstants.kWheelRadius;
 import static frc.robot.Konstants.MecanumDriveConstants.kBackLeftLocation;
 import static frc.robot.Konstants.MecanumDriveConstants.kBackRightLocation;
+import static frc.robot.Konstants.MecanumDriveConstants.kMaxWheelSpeed;
 import static frc.robot.Ports.DrivePorts.kPigeonPort;
 
 import java.util.function.DoubleConsumer;
@@ -103,7 +104,7 @@ public class SKMecanumDrive extends SubsystemBase {
         MecanumDriveWheelSpeeds wheelSpeeds = m_kinematics.toWheelSpeeds(
             new ChassisSpeeds(vx, vy, omega)
         );
-        //TODO: Add a desaturation once a max motor velocity has been determined
+        wheelSpeeds.desaturate(kMaxWheelSpeed);
         
         frontLeft.accept(wheelSpeeds.frontLeftMetersPerSecond);
         frontRight.accept(wheelSpeeds.frontRightMetersPerSecond);
@@ -117,7 +118,7 @@ public class SKMecanumDrive extends SubsystemBase {
      */
     public void setControl(ChassisSpeeds speeds) {
         MecanumDriveWheelSpeeds wheelSpeeds = m_kinematics.toWheelSpeeds(speeds);
-        //TODO: Add a desaturation once a max motor velocity has been determined
+        wheelSpeeds.desaturate(kMaxWheelSpeed);
         
         frontLeft.accept(wheelSpeeds.frontLeftMetersPerSecond);
         frontRight.accept(wheelSpeeds.frontRightMetersPerSecond);
