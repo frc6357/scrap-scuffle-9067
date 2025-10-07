@@ -9,37 +9,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class SubsystemControls
 {
 
-    private final boolean swerve;
-    private final boolean lights;
-    private final boolean elevator;
-    private final boolean endEffector;
-    private final boolean climb;
-    private final boolean coralSubsystem;
-    private final boolean vision;
+    private final boolean scrap;
+    private final boolean salvage;
 
-     /**  
-     * @param swerve
-     *            indicates if the swerve subsystem is present and should be enabled
-     * @param lights
-     *            indicates if the lights subsystem is present and should be enabled
-     */
+
     public SubsystemControls(
-        @JsonProperty(required = true, value = "swerve")      boolean swerve,
-        @JsonProperty(required = true, value = "lights")      boolean lights,
-        @JsonProperty(required = true, value = "elevator")    boolean elevator,
-        @JsonProperty(required = true, value = "endeffector") boolean endeffector,
-        @JsonProperty(required = true, value = "climb") boolean climb,
-        @JsonProperty(required = true, value = "coralSubsystem") boolean coralSubsystem,
-        @JsonProperty(required = true, value = "vision")      boolean vision
+        @JsonProperty(required = true, value = "scrap")      boolean scrap,
+        @JsonProperty(required = true, value = "salvage")      boolean salvage
     )
     {
-        this.swerve = swerve;
-        this.lights = lights;
-        this.elevator = elevator;
-        this.endEffector = endeffector;
-        this.climb = climb;
-        this.coralSubsystem = coralSubsystem;
-        this.vision = vision;
+        this.scrap = scrap;
+        this.salvage = salvage;
     }
 
 
@@ -49,29 +29,12 @@ public class SubsystemControls
      * @return true if the drive subsystem is indicated as present and should be enabled; false
      *         otherwise
      */
-    public boolean isSwervePresent()
+    public boolean isScrapIntakePresent()
     {
-        return swerve;
+        return scrap;
     }
-    public boolean isVisionPresent() {
-        return vision;
+    public boolean isSalvageIntakePresent() {
+        return salvage;
     }
-    public boolean isEndEffectorPresent()
-    {
-        return endEffector;
-    } 
-    public boolean isClimbPresent() 
-    {
-        return climb;
-    }
-    public boolean isCoralSubsystemPresent() 
-    {
-        return coralSubsystem;
-    }
-    public boolean isLightsPresent() {
-        return lights;
-    }
-    public boolean isElevatorPresent() {
-        return elevator;
-    }
+
 }
