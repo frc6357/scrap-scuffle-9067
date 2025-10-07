@@ -67,7 +67,7 @@ public class RobotContainer {
   // Then make static references to each subsystem you've added
   // ex: public static SKVision m_vision;
   public static SKLauncher m_launcher;
-
+  public static SKMecanumDrive m_drive;
   public static SKScrapIntake m_scrapIntake;
   public static SKSalvageIntake m_salvageIntake;
 
@@ -105,8 +105,19 @@ public class RobotContainer {
             // Looking for the Subsystems.json file in the deploy directory
             JsonParser parser =
                     factory.createParser(new File(deployDirectory, Konstants.SUBSYSTEMFILE));
-            SubsystemControls subsystems = mapper.readValue(parser, SubsystemControls.class);
-
+                    SubsystemControls subsystems = mapper.readValue(parser, SubsystemControls.class);
+                    
+            // ex:
+            // if(subsystems.isVisionPresent())
+            // {
+            //     m_visionContainer = Optional.of(new SKVision());
+            //     m_vision = m_visionContainer.get();
+            // }
+            if(subsystems.isMecanumDrivePresent())
+            {
+                m_driveContainer = Optional.of(new SKMecanumDrive());
+                m_drive = m_driveContainer.get();
+            }
             if(subsystems.isScrapIntakePresent()) {
                 m_scrapIntakeContainer = Optional.of(new SKScrapIntake());
                 m_scrapIntake = m_scrapIntakeContainer.get();
@@ -117,12 +128,6 @@ public class RobotContainer {
                 m_salvageIntake = m_salvageIntakeContainer.get();
             }
 
-            // ex:
-            // if(subsystems.isVisionPresent())
-            // {
-            //     m_visionContainer = Optional.of(new SKVision());
-            //     m_vision = m_visionContainer.get();
-            // }
 
             if(subsystems.isLauncherPresent()) {
                 m_launcherContainer = Optional.of(new SKLauncher());

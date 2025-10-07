@@ -12,14 +12,27 @@ public class SubsystemControls
     private final boolean launcher;
     private final boolean scrap;
     private final boolean salvage;
-
-
+    private final boolean mecanum;
+    /**
+     * Creates a new SubsystemControls object with the specified values.
+     * 
+     * @param mecanum   true if the mecanum drive subsystem is present and should be enabled;
+     *                  false otherwise
+     * @param launcher  true if the launcher subsystem is present and should be enabled; false
+     *                  otherwise
+     * @param scrap     true if the scrap intake subsystem is present and should be enabled;
+     *                  false otherwise
+     * @param salvage   true if the salvage intake subsystem is present and should be enabled;
+     *                  false otherwise
+     */
     public SubsystemControls(
-        @JsonProperty(required = true, value = "launcher") boolean launcher,
-        @JsonProperty(required = true, value = "scrap")      boolean scrap,
+        @JsonProperty(required = true, value = "mecanum")      boolean mecanum,
+        @JsonProperty(required = true, value = "launcher")     boolean launcher,
+        @JsonProperty(required = true, value = "scrap")        boolean scrap,
         @JsonProperty(required = true, value = "salvage")      boolean salvage
         )
     {
+        this.mecanum = mecanum;
         this.launcher = launcher;
         this.scrap = scrap;
         this.salvage = salvage;
@@ -41,6 +54,9 @@ public class SubsystemControls
     }
     public boolean isSalvageIntakePresent() {
         return salvage;
+    }
+    public boolean isMecanumDrivePresent() {
+        return mecanum;
     }
 
 }

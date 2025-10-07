@@ -1,4 +1,5 @@
 {
+    "mecanum" : true,
     "scrap" : true,
     "salvage" : true,
     "launcher" : true
