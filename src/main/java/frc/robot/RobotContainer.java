@@ -190,13 +190,13 @@ public class RobotContainer {
                 NamedCommands.registerCommand("RunScrapIntakeCommandContinuous", new RunScrapIntakeCommandContinuous(m_scrapIntake));
                 NamedCommands.registerCommand("StopScrapIntakeCommand", new StopScrapIntakeCommand(m_scrapIntake));
             }
+            if(m_launcherContainer.isPresent()) {
+               NamedCommands.registerCommand("RunLauncherCommand70Pct", new RunLauncherCommand(m_launcher, 0.7));
+               NamedCommands.registerCommand("RunLauncherContinuous70Pct", new RunLauncherCommandContinuous(m_launcher, 0.7));
+               NamedCommands.registerCommand("StopLauncherCommand", new StopLauncherCommand(m_launcher));
+            }
         }
 
-         if(m_launcherContainer.isPresent()) {
-            NamedCommands.registerCommand("RunLauncherCommand70Pct", new RunLauncherCommand(m_launcher, 0.7));
-            NamedCommands.registerCommand("RunLauncherContinuous70Pct", new RunLauncherCommandContinuous(m_launcher, 0.7));
-            NamedCommands.registerCommand("StopLauncherCommand", new StopLauncherCommand(m_launcher));
-         }
     }
 
   /**

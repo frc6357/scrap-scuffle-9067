@@ -20,8 +20,8 @@ public class SubsystemControls
         @JsonProperty(required = true, value = "salvage")      boolean salvage
         )
     {
-            this.launcher = launcher;
-            this.scrap = scrap;
+        this.launcher = launcher;
+        this.scrap = scrap;
         this.salvage = salvage;
     }
 
