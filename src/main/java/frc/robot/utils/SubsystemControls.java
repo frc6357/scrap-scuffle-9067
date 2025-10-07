@@ -10,18 +10,19 @@ public class SubsystemControls
 {
 
     private final boolean launcher;
+    private final boolean scrap;
+    private final boolean salvage;
 
-     /**  
-     * @param swerve
-     *            indicates if the swerve subsystem is present and should be enabled
-     * @param lights
-     *            indicates if the lights subsystem is present and should be enabled
-     */
+
     public SubsystemControls(
-        @JsonProperty(required = true, value = "launcher") boolean launcher
-    )
+        @JsonProperty(required = true, value = "launcher") boolean launcher,
+        @JsonProperty(required = true, value = "scrap")      boolean scrap,
+        @JsonProperty(required = true, value = "salvage")      boolean salvage
+        )
     {
-        this.launcher = launcher;
+            this.launcher = launcher;
+            this.scrap = scrap;
+        this.salvage = salvage;
     }
 
 
@@ -34,4 +35,12 @@ public class SubsystemControls
     public boolean isLauncherPresent() {
         return launcher;
     }
+    public boolean isScrapIntakePresent()
+    {
+        return scrap;
+    }
+    public boolean isSalvageIntakePresent() {
+        return salvage;
+    }
+
 }

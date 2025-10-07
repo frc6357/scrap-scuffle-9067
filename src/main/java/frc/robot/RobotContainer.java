@@ -28,6 +28,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.bindings.CommandBinder;
+import frc.robot.bindings.SKSalvageIntakeBinder;
+import frc.robot.bindings.SKScrapIntakeBinder;
+import frc.robot.commands.RunSalvageIntakeCommand;
+import frc.robot.commands.RunSalvageIntakeCommandContinuous;
+import frc.robot.commands.RunScrapIntakeCommand;
+import frc.robot.commands.RunScrapIntakeCommandContinuous;
+import frc.robot.commands.StopSalvageIntakeCommand;
+import frc.robot.commands.StopScrapIntakeCommand;
+import frc.robot.subsystems.SKMecanumDrive;
+import frc.robot.subsystems.SKSalvageIntake;
+import frc.robot.subsystems.SKScrapIntake;
 import frc.robot.bindings.SKLauncherBinder;
 import frc.robot.commands.RunLauncherCommand;
 import frc.robot.commands.RunLauncherCommandContinuous;
@@ -47,13 +58,18 @@ public class RobotContainer {
 
   // Make your list of subsystem containers here
   // ex: public Optional<SKVision> m_visionContainer = Optional.empty();
+
+  public Optional<SKMecanumDrive> m_driveContainer = Optional.empty();
+  public Optional<SKScrapIntake> m_scrapIntakeContainer = Optional.empty();
+  public Optional<SKSalvageIntake> m_salvageIntakeContainer = Optional.empty();
   public Optional<SKLauncher> m_launcherContainer = Optional.empty();
 
   // Then make static references to each subsystem you've added
   // ex: public static SKVision m_vision;
   public static SKLauncher m_launcher;
 
-
+  public static SKScrapIntake m_scrapIntake;
+  public static SKSalvageIntake m_salvageIntake;
 
   // The list containing all the command binding classes
   private List<CommandBinder> buttonBinders = new ArrayList<CommandBinder>();
@@ -91,6 +107,16 @@ public class RobotContainer {
                     factory.createParser(new File(deployDirectory, Konstants.SUBSYSTEMFILE));
             SubsystemControls subsystems = mapper.readValue(parser, SubsystemControls.class);
 
+            if(subsystems.isScrapIntakePresent()) {
+                m_scrapIntakeContainer = Optional.of(new SKScrapIntake());
+                m_scrapIntake = m_scrapIntakeContainer.get();
+            }
+
+            if(subsystems.isSalvageIntakePresent()) {
+                m_salvageIntakeContainer = Optional.of(new SKSalvageIntake());
+                m_salvageIntake = m_salvageIntakeContainer.get();
+            }
+
             // ex:
             // if(subsystems.isVisionPresent())
             // {
@@ -123,6 +149,8 @@ public class RobotContainer {
         //       respective container reference into the binder constructor.
         // ex: buttonBinders.add(new SKVisionBinder(m_visionContainer, m_driveContainer, m_launcherContainer))
 
+        buttonBinders.add(new SKScrapIntakeBinder(m_scrapIntakeContainer));
+        buttonBinders.add(new SKSalvageIntakeBinder(m_salvageIntakeContainer));
         buttonBinders.add(new SKLauncherBinder(m_launcherContainer));
 
         // Traversing through all the binding classes to actually bind the buttons
@@ -150,6 +178,19 @@ public class RobotContainer {
          *      }
          * }
          */
+
+        if(m_driveContainer.isPresent()) {            
+            if(m_salvageIntakeContainer.isPresent()) {
+                NamedCommands.registerCommand("RunSalvageIntakeCommand", new RunSalvageIntakeCommand(m_salvageIntake));
+                NamedCommands.registerCommand("RunSalvageIntakeCommandContinuous", new RunSalvageIntakeCommandContinuous(m_salvageIntake));
+                NamedCommands.registerCommand("StopSalvageIntakeCommand", new StopSalvageIntakeCommand(m_salvageIntake));
+            }
+            if(m_scrapIntakeContainer.isPresent()) {
+                NamedCommands.registerCommand("RunScrapIntakeCommand", new RunScrapIntakeCommand(m_scrapIntake));
+                NamedCommands.registerCommand("RunScrapIntakeCommandContinuous", new RunScrapIntakeCommandContinuous(m_scrapIntake));
+                NamedCommands.registerCommand("StopScrapIntakeCommand", new StopScrapIntakeCommand(m_scrapIntake));
+            }
+        }
 
          if(m_launcherContainer.isPresent()) {
             NamedCommands.registerCommand("RunLauncherCommand70Pct", new RunLauncherCommand(m_launcher, 0.7));

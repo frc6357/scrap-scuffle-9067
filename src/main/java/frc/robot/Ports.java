@@ -56,7 +56,18 @@ public class Ports
         public static final SKTrigger kLauncherTrigger = new SKTrigger(kOperator, kRightTrigger.value, AXIS);
         
         //ExampleButton
-        public static final SKTrigger kExampleButton = new SKTrigger(kOperator, kY.value, BUTTON);
+        // public static final SKTrigger kExampleButton = new SKTrigger(kOperator, kY.value, BUTTON);
+
+        //Intake and WATER BUCKET... RELEEAASSE!
+        public static final SKTrigger kScrapIntakeTrigger = new SKTrigger(kOperator, kRightBumper.value, BUTTON);
+        public static final SKTrigger kSalvageIntakeTrigger = new SKTrigger(kOperator, kLeftBumper.value, BUTTON);
+        public static final SKTrigger kScrapLauncherTrigger = new SKTrigger(kOperator, kRightTrigger.value, AXIS);
+        public static final SKTrigger kSalvageEjectTrigger = new SKTrigger(kOperator, kLeftTrigger.value, AXIS);
+
+        //Salvage Positions
+        public static final SKTrigger kZeroPosition = new SKTrigger(kOperator, 0, POV);
+        public static final SKTrigger kPolePosition = new SKTrigger(kOperator, 90, POV);
+        public static final SKTrigger kIntakePosition = new SKTrigger(kOperator, 180, POV);
     }
 
     /**
@@ -97,6 +108,11 @@ public class Ports
         public static CANPort kLauncherMotorPort = new CANPort(4, busName);
     }
 
+    public static final class IntakePorts {
+        private static String busName = "";
+
+        public static final CANPort kIntakeMotorPort = new CANPort(40, busName);
+    }
 
     // public static class ExamplePorts
     // {
