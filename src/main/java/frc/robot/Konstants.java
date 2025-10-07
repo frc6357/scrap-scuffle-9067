@@ -6,6 +6,13 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static frc.robot.Ports.DrivePorts.kPigeonPort;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.LinearVelocity;
 
@@ -43,15 +50,30 @@ public final class Konstants
         public static final double kMaxSpeed = kSpeedAt12Volts.in(MetersPerSecond);
         public static final double kMaxAngularSpeed = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
         public static final double kMaxAngularSpeedDegrees = RadiansPerSecond.of(kMaxAngularSpeed).in(DegreesPerSecond);
-        public static final double kWheelRadius = 0.106; // in meters
+        public static final double kWheelRadius = 0.0762; // in meters
+        public static final double kMaxWheelSpeed = 4.5; // m/s
 
         public static final int kPigeonID = kPigeonPort.ID;
+
+        public static final ClosedLoopConfig driveMotorPIDConfig = new ClosedLoopConfig();
+        static {
+            driveMotorPIDConfig.p(0.1).velocityFF(0.124).feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        }
 
         // Locations of the wheels relative to the robot center. (In meters)
         public static final Translation2d kFrontLeftLocation = new Translation2d(0.381, 0.381);
         public static final Translation2d kFrontRightLocation = new Translation2d(0.381, -0.381);
         public static final Translation2d kBackRightLocation = new Translation2d(-0.381, -0.381);
         public static final Translation2d kBackLeftLocation = new Translation2d(-0.381, 0.381);
+    }
+
+    public static final class AutoConstants
+    {
+        // PID Constants
+        public static final PIDConstants kTranslationPIDConstants = new PIDConstants(6, 0, 0);
+        public static final PIDConstants kRotationPIDConstants    = new PIDConstants(6, 0.4, 0);
+
+        public static final PPHolonomicDriveController pathConfig = new PPHolonomicDriveController(kTranslationPIDConstants, kRotationPIDConstants);
     }
 
     public static final class IntakeConstants {
