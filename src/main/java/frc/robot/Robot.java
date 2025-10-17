@@ -7,12 +7,6 @@ import static frc.robot.Ports.DriverPorts.kDriver;
 import static frc.robot.Ports.OperatorPorts.kOperator;
 
 import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGReader;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 
 import au.grapplerobotics.CanBridge;
 import edu.wpi.first.net.WebServer;
@@ -21,7 +15,6 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import com.ctre.phoenix6.Utils;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
 
@@ -29,8 +22,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.preferences.SKPreferences;
-import frc.robot.utils.files.Elastic;
-import frc.robot.utils.files.Elastic.Notification.NotificationLevel;
 
 // Unused Imports
 //import edu.wpi.first.wpilibj.TimedRobot;

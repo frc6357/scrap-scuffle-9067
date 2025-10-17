@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
@@ -10,16 +9,13 @@ import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.motorcontrol.PWMMotorController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.SK25AutoBuilder;
 
 import static frc.robot.Konstants.MecanumDriveConstants.kFrontLeftLocation;
 import static frc.robot.Konstants.MecanumDriveConstants.kFrontRightLocation;
-import static frc.robot.Konstants.MecanumDriveConstants.kMaxSpeed;
 import static frc.robot.Konstants.MecanumDriveConstants.kWheelRadius;
 import static frc.robot.Konstants.MecanumDriveConstants.driveMotorPIDConfig;
 import static frc.robot.Konstants.MecanumDriveConstants.kBackLeftLocation;
@@ -32,9 +28,6 @@ import static frc.robot.Ports.DrivePorts.kPigeonPort;
 import static frc.robot.Ports.DrivePorts.kRearLeftDriveMotorPort;
 import static frc.robot.Ports.DrivePorts.kRearRightDriveMotorPort;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.function.DoubleConsumer;
 
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -46,7 +39,6 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.ctre.phoenix6.hardware.Pigeon2;
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 
 
@@ -203,31 +195,35 @@ public class SKMecanumDrive extends SubsystemBase {
      * @return The meters travelled by the wheel's encoder
      */
     private double getDistance(RelativeEncoder encoder) {
-        return (encoder.getPosition() * 2 * Math.PI) * kWheelRadius;
+        return ((encoder.getPosition() / 12.75) * 2 * Math.PI) * kWheelRadius;
     }
 
     private void setFrontLeft(double speed) {
         // Convert from linear speed in m/s to RPM
         speed = speed / kWheelRadius; // ω = v/r
         speed *= 60; // Rev/s -> RPM
+        speed *= 12.75; // Wheel speed to motor speed conversion factor
         frontLeftMotor.getClosedLoopController().setReference(speed, ControlType.kVelocity);
     }
     private void setFrontRight(double speed) {
         // Convert from linear speed in m/s to RPM
         speed = speed / kWheelRadius; // ω = v/r
         speed *= 60; // Rev/s -> RPM
+        speed *= 12.75; // Wheel speed to motor speed conversion factor
         frontRightMotor.getClosedLoopController().setReference(speed, ControlType.kVelocity);
     }
     private void setBackLeft(double speed) {
         // Convert from linear speed in m/s to RPM
         speed = speed / kWheelRadius; // ω = v/r
         speed *= 60; // Rev/s -> RPM
+        speed *= 12.75; // Wheel speed to motor speed conversion factor
         backLeftMotor.getClosedLoopController().setReference(speed, ControlType.kVelocity);
     }
     private void setBackRight(double speed) {
         // Convert from linear speed in m/s to RPM
         speed = speed / kWheelRadius; // ω = v/r
         speed *= 60; // Rev/s -> RPM
+        speed *= 12.75; // Wheel speed to motor speed conversion factor
         backRightMotor.getClosedLoopController().setReference(speed, ControlType.kVelocity);
     }
 

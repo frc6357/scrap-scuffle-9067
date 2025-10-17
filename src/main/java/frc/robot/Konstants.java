@@ -6,11 +6,9 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static frc.robot.Ports.DrivePorts.kPigeonPort;
 
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.revrobotics.spark.config.ClosedLoopConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -51,7 +49,7 @@ public final class Konstants
         public static final double kMaxAngularSpeed = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
         public static final double kMaxAngularSpeedDegrees = RadiansPerSecond.of(kMaxAngularSpeed).in(DegreesPerSecond);
         public static final double kWheelRadius = 0.0762; // in meters
-        public static final double kMaxWheelSpeed = 4.5; // m/s
+        public static final double kMaxWheelSpeed = 3.1; // m/s
 
         public static final int kPigeonID = kPigeonPort.ID;
 
