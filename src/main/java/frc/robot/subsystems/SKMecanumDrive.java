@@ -100,7 +100,7 @@ public class SKMecanumDrive extends SubsystemBase {
         m_field.setRobotPose(getRobotPose());
         SmartDashboard.putData("Field", m_field);
 
-        SmartDashboard.putNumberArray("Wheel Speeds", new double[] {
+        SmartDashboard.putNumberArray("Motor Speeds", new double[] {
             frontLeftMotor.getEncoder().getVelocity(),
             frontRightMotor.getEncoder().getVelocity(),
             backLeftMotor.getEncoder().getVelocity(),
