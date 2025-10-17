@@ -1,6 +1,6 @@
 {
     "mecanum" : true,
     "scrap" : true,
-    "salvage" : true,
+    "salvage" : false,
     "launcher" : true
 }

@@ -78,7 +78,7 @@ public class Ports
 
     public static class DrivePorts
     {
-        private static final String busName = "DriveCAN";
+        private static final String busName = "";
 
         // CAN IDs for the drive motors on the swerve module
         public static final CANPort kFrontLeftDriveMotorPort  = new CANPort(13, busName);
@@ -108,7 +108,7 @@ public class Ports
         public static CANPort kLauncherMotorPort = new CANPort(4, busName);
     }
 
-    public static final class IntakePorts {
+    public static final class ScrapIntakePorts {
         private static String busName = "";
 
         public static final CANPort kIntakeMotorPort = new CANPort(40, busName);

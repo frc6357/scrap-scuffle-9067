@@ -55,10 +55,7 @@ public final class Konstants
 
         public static final int kPigeonID = kPigeonPort.ID;
 
-        public static final ClosedLoopConfig driveMotorPIDConfig = new ClosedLoopConfig();
-        static {
-            driveMotorPIDConfig.p(0.1).velocityFF(0.124).feedbackSensor(FeedbackSensor.kPrimaryEncoder);
-        }
+        public static final ClosedLoopConfig driveMotorPIDConfig = new ClosedLoopConfig().feedbackSensor(FeedbackSensor.kPrimaryEncoder).p(0.1).i(0).d(0).velocityFF(0.124).outputRange(-1, 1);
 
         // Locations of the wheels relative to the robot center. (In meters)
         public static final Translation2d kFrontLeftLocation = new Translation2d(0.381, 0.381);

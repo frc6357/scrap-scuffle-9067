@@ -11,8 +11,12 @@ import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.motorcontrol.PWMMotorController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.SK25AutoBuilder;
+
 import static frc.robot.Konstants.MecanumDriveConstants.kFrontLeftLocation;
 import static frc.robot.Konstants.MecanumDriveConstants.kFrontRightLocation;
 import static frc.robot.Konstants.MecanumDriveConstants.kMaxSpeed;
@@ -28,6 +32,9 @@ import static frc.robot.Ports.DrivePorts.kPigeonPort;
 import static frc.robot.Ports.DrivePorts.kRearLeftDriveMotorPort;
 import static frc.robot.Ports.DrivePorts.kRearRightDriveMotorPort;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.function.DoubleConsumer;
 
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -53,14 +60,16 @@ public class SKMecanumDrive extends SubsystemBase {
     DoubleConsumer frontRight = speed -> setFrontRight(speed);
     DoubleConsumer backLeft = speed -> setBackLeft(speed);
     DoubleConsumer backRight = speed -> setBackRight(speed);
-    SparkMax frontLeftMotor = new SparkMax(kFrontLeftDriveMotorPort.ID, MotorType.kBrushless);
-    SparkMax frontRightMotor = new SparkMax(kFrontRightDriveMotorPort.ID, MotorType.kBrushless);
-    SparkMax backLeftMotor = new SparkMax(kRearLeftDriveMotorPort.ID, MotorType.kBrushless);
-    SparkMax backRightMotor = new SparkMax(kRearRightDriveMotorPort.ID, MotorType.kBrushless);
-    SparkMaxConfig fLConfig;
-    SparkMaxConfig fRConfig;
-    SparkMaxConfig bLConfig;
-    SparkMaxConfig bRConfig;
+    SparkMax frontLeftMotor = new SparkMax(kFrontLeftDriveMotorPort.ID, MotorType.kBrushed);
+    SparkMax frontRightMotor = new SparkMax(kFrontRightDriveMotorPort.ID, MotorType.kBrushed);
+    SparkMax backLeftMotor = new SparkMax(kRearLeftDriveMotorPort.ID, MotorType.kBrushed);
+    SparkMax backRightMotor = new SparkMax(kRearRightDriveMotorPort.ID, MotorType.kBrushed);
+    SparkMaxConfig fLConfig = new SparkMaxConfig();
+    SparkMaxConfig fRConfig = new SparkMaxConfig();
+    SparkMaxConfig bLConfig = new SparkMaxConfig();
+    SparkMaxConfig bRConfig = new SparkMaxConfig();
+
+    Field2d m_field = new Field2d();
 
 
     public SKMecanumDrive() 
@@ -96,6 +105,15 @@ public class SKMecanumDrive extends SubsystemBase {
     @Override
     public void periodic() {
         m_odometry.update(getIMURotation(), getWheelPositions());
+        m_field.setRobotPose(getRobotPose());
+        SmartDashboard.putData("Field", m_field);
+
+        SmartDashboard.putNumberArray("Wheel Speeds", new double[] {
+            frontLeftMotor.getEncoder().getVelocity(),
+            frontRightMotor.getEncoder().getVelocity(),
+            backLeftMotor.getEncoder().getVelocity(),
+            backRightMotor.getEncoder().getVelocity()
+        });
     }
 
     /**
@@ -106,15 +124,7 @@ public class SKMecanumDrive extends SubsystemBase {
      * @return
      */
     public void setControl(double vx, double vy, double omega) {
-        MecanumDriveWheelSpeeds wheelSpeeds = m_kinematics.toWheelSpeeds(
-            new ChassisSpeeds(vx, vy, omega)
-        );
-        wheelSpeeds.desaturate(kMaxWheelSpeed);
-        
-        frontLeft.accept(wheelSpeeds.frontLeftMetersPerSecond);
-        frontRight.accept(wheelSpeeds.frontRightMetersPerSecond);
-        backLeft.accept(wheelSpeeds.rearLeftMetersPerSecond);
-        backRight.accept(wheelSpeeds.rearRightMetersPerSecond);
+        setControl(new ChassisSpeeds(vx, vy, omega));
     }
 
     /**
@@ -125,6 +135,13 @@ public class SKMecanumDrive extends SubsystemBase {
         MecanumDriveWheelSpeeds wheelSpeeds = m_kinematics.toWheelSpeeds(speeds);
         wheelSpeeds.desaturate(kMaxWheelSpeed);
         
+        SmartDashboard.putNumberArray("Target wheel speeds", new double[] {
+            wheelSpeeds.frontLeftMetersPerSecond,
+            wheelSpeeds.frontRightMetersPerSecond,
+            wheelSpeeds.rearLeftMetersPerSecond,
+            wheelSpeeds.rearRightMetersPerSecond
+        });
+
         frontLeft.accept(wheelSpeeds.frontLeftMetersPerSecond);
         frontRight.accept(wheelSpeeds.frontRightMetersPerSecond);
         backLeft.accept(wheelSpeeds.rearLeftMetersPerSecond);
@@ -161,6 +178,10 @@ public class SKMecanumDrive extends SubsystemBase {
 
     public Pose2d getRobotPose() {
         return m_odometry.getPoseMeters();
+    }
+
+    public Rotation2d getRobotRotation() {
+        return getRobotPose().getRotation();
     }
 
     private ChassisSpeeds getChassisSpeeds() {
@@ -213,7 +234,7 @@ public class SKMecanumDrive extends SubsystemBase {
     private void configureAutoBuilder() {
         try {
             var config = RobotConfig.fromGUISettings();
-            AutoBuilder.configure(
+            SK25AutoBuilder.configure(
                 this::getRobotPose,   // Supplier of current robot pose
                 this::resetPose,         // Consumer for seeding pose against auto
                 this::getChassisSpeeds, // Supplier of current robot speeds

@@ -3,19 +3,20 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import static frc.robot.Ports.LauncherPorts.kLauncherMotorPort;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 public class SKLauncher extends SubsystemBase{
 
     SparkMax motor = new SparkMax(kLauncherMotorPort.ID, MotorType.kBrushless);
-    SparkBaseConfig motorConfig;
+    SparkMaxConfig motorConfig = new SparkMaxConfig();
 
     public SKLauncher() {
         motorConfig.inverted(false).idleMode(IdleMode.kCoast).smartCurrentLimit(60);
@@ -42,6 +43,15 @@ public class SKLauncher extends SubsystemBase{
     @Override
     public void periodic() {
         SmartDashboard.putNumber("LauncherSpeedRPM", motor.getEncoder().getVelocity());
+        }
+
+        public void runLauncherAtTargetRotation(SKMecanumDrive drive, Rotation2d targetRotation, double speed) {
+        Rotation2d currentRotation = drive.getRobotRotation();
+        if (currentRotation.equals(targetRotation)) {
+            runLauncher(speed);
+        } else {
+            stopLauncher();
+        }
     }
 
 }

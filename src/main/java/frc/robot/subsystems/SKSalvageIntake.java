@@ -10,7 +10,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import static frc.robot.Ports.IntakePorts.kIntakeMotorPort;
+import static frc.robot.Ports.ScrapIntakePorts.kIntakeMotorPort;
 
 public class SKSalvageIntake extends SubsystemBase{
 

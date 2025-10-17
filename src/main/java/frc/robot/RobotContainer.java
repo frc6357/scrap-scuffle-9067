@@ -16,6 +16,7 @@ import com.ctre.phoenix6.Utils;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -24,6 +25,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -40,10 +42,12 @@ import frc.robot.subsystems.SKMecanumDrive;
 import frc.robot.subsystems.SKSalvageIntake;
 import frc.robot.subsystems.SKScrapIntake;
 import frc.robot.bindings.SKLauncherBinder;
+import frc.robot.bindings.SKMecanumBinder;
 import frc.robot.commands.RunLauncherCommand;
 import frc.robot.commands.RunLauncherCommandContinuous;
 import frc.robot.commands.StopLauncherCommand;
 import frc.robot.subsystems.SKLauncher;
+import frc.robot.utils.SK25AutoBuilder;
 import frc.robot.utils.SubsystemControls;
 import frc.robot.utils.filters.FilteredJoystick;
 
@@ -88,6 +92,10 @@ public class RobotContainer {
 
     // Configure the trigger bindings
     configureButtonBindings();
+
+    autoCommandSelector = SK25AutoBuilder.buildAutoChooser("P1Jolt");
+    //set delete old files = true in build.gradle to prevent sotrage of unused orphans
+    SmartDashboard.putData("Select an Auto", autoCommandSelector);
   }
 
   /**
@@ -157,6 +165,7 @@ public class RobotContainer {
         buttonBinders.add(new SKScrapIntakeBinder(m_scrapIntakeContainer));
         buttonBinders.add(new SKSalvageIntakeBinder(m_salvageIntakeContainer));
         buttonBinders.add(new SKLauncherBinder(m_launcherContainer));
+        buttonBinders.add(new SKMecanumBinder(m_driveContainer));
 
         // Traversing through all the binding classes to actually bind the buttons
         for (CommandBinder subsystemGroup : buttonBinders)

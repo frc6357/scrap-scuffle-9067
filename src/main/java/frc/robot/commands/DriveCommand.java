@@ -3,6 +3,7 @@ package frc.robot.commands;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SKMecanumDrive;
 
 
@@ -13,7 +14,7 @@ import frc.robot.subsystems.SKMecanumDrive;
  * are used, brownouts will likely occur. Try using a slew filter on the velocities passed into
  * this DriveCommand in order to limit their maximum rate of change. (Limiting acceleration)
  */
-public class DriveCommand {
+public class DriveCommand extends Command{
     private SKMecanumDrive m_drivetrain;
 
     Supplier<Double> velX;
@@ -41,9 +42,12 @@ public class DriveCommand {
             this.velY = velY;
             this.rotRate = rotRate;
             this.fieldOriented = fieldOriented;
+
+            addRequirements(m_drivetrain);
         }
         
-        public void run(){
+        @Override
+        public void execute(){
             ChassisSpeeds speeds = new ChassisSpeeds(
                 velX.get(), velY.get(), rotRate.get());
             
@@ -58,5 +62,10 @@ public class DriveCommand {
                     speeds
                 );
             }
+        }
+
+        @Override
+        public boolean isFinished() {
+            return false; // This command should never finish on its own
         }
 }

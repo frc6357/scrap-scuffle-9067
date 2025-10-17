@@ -125,50 +125,6 @@ public class Robot extends LoggedRobot
         SmartDashboard.putNumber("IntMatchTime", ((Double)DriverStation.getMatchTime()).intValue());
     }
 
-    public void checkIfThirtySecondsLeft()
-    {
-        // DriverStation.reportError(String.valueOf(((Double)DriverStation.getMatchTime()).intValue()), false);
-
-        //time will be -1 if enabled in teleop directly. Works in practice mode on DS.
-        if (((Double)DriverStation.getMatchTime()).intValue() <= 30 && thirtySecondsReached == false)  //previously match time
-        {
-            
-            // DriverStation.reportError("CONDITION REACHED", false);
-
-            //dont let the notification send more than once
-            thirtySecondsReached = true;
-
-            //send elastic notification that thirty seconds are left
-            Elastic.Notification timeToClimbNotification = new Elastic.Notification(
-                NotificationLevel.WARNING, 
-                "Time to Climb!", 
-                "There are thirty seconds left in the match."
-            );
-            //make the notification take up more of the screen
-            Elastic.sendNotification(timeToClimbNotification
-                .withDisplaySeconds(5.0)
-                .withWidth(500.0)
-                .withHeight(200.0)
-            );
-
-            //controller rumble to alert driver and operator
-            kDriver.setRumble(RumbleType.kBothRumble, 0.5);
-            kOperator.setRumble(RumbleType.kBothRumble, 0.5);
-
-            rumbling = true;
-        }
-
-        if (DriverStation.getMatchTime() <= 29 && rumbling == true)
-            {
-                //stop rumble after 1 second
-                kDriver.setRumble(RumbleType.kBothRumble, 0.0);
-                kOperator.setRumble(RumbleType.kBothRumble, 0.0);
-
-                rumbling = false;
-
-                // DriverStation.reportError("RUMBLE STOPPED", false);
-            }
-    }
 
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
@@ -227,15 +183,12 @@ public class Robot extends LoggedRobot
 
         m_robotContainer.teleopInit();
 
-        //ensure this value is reset before thirty seconds can ever be reached
-        thirtySecondsReached = false;
     }
 
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic()
     {
-        checkIfThirtySecondsLeft();
     }
 
     @Override

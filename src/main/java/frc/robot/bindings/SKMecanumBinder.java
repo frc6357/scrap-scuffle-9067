@@ -91,22 +91,35 @@ public class SKMecanumBinder implements CommandBinder {
         kTranslationYPort.setFilter(translationYFilter);
         kVelocityOmegaPort.setFilter(rotationFilter);
 
-        fieldCentricDrive = new DriveCommand(
-            drivetrain, 
-            () -> getVelX(), 
-            () -> getVelY(), 
-            () -> getVelOmega(), 
-            ()-> true);
+        // fieldCentricDrive = new DriveCommand(
+        //     drivetrain, 
+        //     () -> getJoystickVelX(), 
+        //     () -> getJoystickVelY(), 
+        //     () -> getJoystickVelOmega(), 
+        //     ()-> true);
         
-        robotCentricDrive = new DriveCommand(
-            drivetrain, 
-            () -> getVelX(), 
-            () -> getVelY(), 
-            () -> getVelOmega(), 
-            ()-> false);
+        // robotCentricDrive = new DriveCommand(
+        //     drivetrain, 
+        //     () -> getJoystickVelX(), 
+        //     () -> getJoystickVelY(), 
+        //     () -> getJoystickVelOmega(), 
+        //     ()-> false);
         
-        robotCentric.whileTrue(new InstantCommand(() -> robotCentricDrive.run()));
-        drivetrain.setDefaultCommand(new InstantCommand(() -> fieldCentricDrive.run()));
+        robotCentric.whileTrue(
+                new DriveCommand(
+                drivetrain, 
+                () -> getJoystickVelX(), 
+                () -> getJoystickVelY(), 
+                () -> getJoystickVelOmega(), 
+                ()-> false));
+
+        drivetrain.setDefaultCommand(
+            new DriveCommand(
+                drivetrain, 
+                () -> getJoystickVelX(), 
+                () -> getJoystickVelY(), 
+                () -> getJoystickVelOmega(), 
+                ()-> true));
 
         resetButton.onTrue(new InstantCommand(() -> drivetrain.resetRotation()));
     }
@@ -136,15 +149,15 @@ public class SKMecanumBinder implements CommandBinder {
             return axis;
     }
 
-    private double getVelX() {
+    private double getJoystickVelX() {
         // Drive forward with negative Y on the joystick axis (forward)
         return applyGains(-kMaxSpeed * kTranslationXPort.getFilteredAxis(), kSlowModePercent);
     }
-    private double getVelY() {
+    private double getJoystickVelY() {
         // Drive left with negative X on the joystick axis (left)
         return applyGains(-kMaxSpeed * kTranslationYPort.getFilteredAxis(), kSlowModePercent);
     }
-    private double getVelOmega() {
+    private double getJoystickVelOmega() {
         // Drive counterclockwise with negative X on the joystick axis (left)
         return applyGains(kMaxAngularSpeed * -1.0 * kVelocityOmegaPort.getFilteredAxis(), kSlowModeRotationPercent);
     }
