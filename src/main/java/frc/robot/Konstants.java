@@ -46,7 +46,7 @@ public final class Konstants
         public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(3.78);
 
         public static final double kMaxSpeed = kSpeedAt12Volts.in(MetersPerSecond);
-        public static final double kMaxAngularSpeed = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
+        public static final double kMaxAngularSpeed = RotationsPerSecond.of(0.5).in(RadiansPerSecond);
         public static final double kMaxAngularSpeedDegrees = RadiansPerSecond.of(kMaxAngularSpeed).in(DegreesPerSecond);
         public static final double kWheelRadius = 0.0762; // in meters
         public static final double kMaxWheelSpeed = 3.1; // m/s
@@ -78,7 +78,7 @@ public final class Konstants
     public static final class IOConstants {
         public static final double kJoystickDeadband = 0.15;
         public static final double kSlowModePercent  = 0.3;
-        public static final double kSlowModeRotationPercent = 0.5;
+        public static final double kSlowModeRotationPercent = 0.2;
     }
 
     public static final class LightConstants

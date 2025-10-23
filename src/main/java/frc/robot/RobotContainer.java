@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static frc.robot.Konstants.MecanumDriveConstants.kMaxSpeed;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ import frc.robot.subsystems.SKSalvageIntake;
 import frc.robot.subsystems.SKScrapIntake;
 import frc.robot.bindings.SKLauncherBinder;
 import frc.robot.bindings.SKMecanumBinder;
+import frc.robot.commands.DriveCommand;
 import frc.robot.commands.RunLauncherCommand;
 import frc.robot.commands.RunLauncherCommandContinuous;
 import frc.robot.commands.StopLauncherCommand;
@@ -81,14 +84,14 @@ public class RobotContainer {
     configureSubsystems();
 
     // sets up autos needed for pathplanner
-    configurePathPlannerCommands();
+    // configurePathPlannerCommands();
 
     // Configure the trigger bindings
     configureButtonBindings();
 
-    autoCommandSelector = SK25AutoBuilder.buildAutoChooser("P1Jolt");
-    //set delete old files = true in build.gradle to prevent sotrage of unused orphans
-    SmartDashboard.putData("Select an Auto", autoCommandSelector);
+    // autoCommandSelector = SK25AutoBuilder.buildAutoChooser("P1Jolt");
+    // //set delete old files = true in build.gradle to prevent sotrage of unused orphans
+    // SmartDashboard.putData("Select an Auto", autoCommandSelector);
   }
 
   /**
@@ -217,7 +220,8 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand()
     {
-        return Commands.sequence(Commands.waitSeconds(0.01), autoCommandSelector.getSelected());
+        Command taxiAuto = Commands.race(Commands.waitSeconds(1.5), new DriveCommand(m_drive, () -> kMaxSpeed, () -> 0.0, () -> 0.0, () -> false));
+        return Commands.sequence(Commands.waitSeconds(0.01), taxiAuto);
     }
 
     public void testPeriodic(){

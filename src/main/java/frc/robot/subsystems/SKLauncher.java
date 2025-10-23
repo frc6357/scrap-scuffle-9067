@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class SKLauncher extends SubsystemBase{
 
+    SparkMax firstMotor = new SparkMax(5, MotorType.kBrushless);
     SparkMax motor = new SparkMax(kLauncherMotorPort.ID, MotorType.kBrushless);
     SparkMaxConfig motorConfig = new SparkMaxConfig();
 
@@ -22,6 +23,7 @@ public class SKLauncher extends SubsystemBase{
         motorConfig.inverted(false).idleMode(IdleMode.kCoast).smartCurrentLimit(60);
         motorConfig.openLoopRampRate(0.1);
 
+        firstMotor.configure(motorConfig.follow(motor).inverted(false), ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
         motor.configure(motorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
     }
 
@@ -30,7 +32,7 @@ public class SKLauncher extends SubsystemBase{
      * @param speed The speed to run the motor at
      */
     public void runLauncher(double speed) {
-        motor.set(speed);
+        motor.set(-speed);
     }
 
     /**
@@ -43,15 +45,15 @@ public class SKLauncher extends SubsystemBase{
     @Override
     public void periodic() {
         SmartDashboard.putNumber("LauncherSpeedRPM", motor.getEncoder().getVelocity());
-        }
+        
 
-        public void runLauncherAtTargetRotation(SKMecanumDrive drive, Rotation2d targetRotation, double speed) {
-        Rotation2d currentRotation = drive.getRobotRotation();
-        if (currentRotation.equals(targetRotation)) {
-            runLauncher(speed);
-        } else {
-            stopLauncher();
-        }
+        // public void runLauncherAtTargetRotation(SKMecanumDrive drive, Rotation2d targetRotation, double speed) {
+        // Rotation2d currentRotation = drive.getRobotRotation();
+        // if (currentRotation.equals(targetRotation)) {
+        //     runLauncher(speed);
+        // } else {
+        //     stopLauncher();
+        // }
     }
 
 }

@@ -15,7 +15,7 @@ public class RunScrapIntakeCommand extends Command {
     @Override
     public void initialize() {
         // Runs the intake at -100% speed
-        m_intake.runIntake(-1);
+        m_intake.runIntake(-.5);
     }
 
     @Override

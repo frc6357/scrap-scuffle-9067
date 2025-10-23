@@ -119,9 +119,9 @@ public class SKMecanumBinder implements CommandBinder {
                 () -> getJoystickVelX(), 
                 () -> getJoystickVelY(), 
                 () -> getJoystickVelOmega(), 
-                ()-> true));
+                ()-> false));
 
-        resetButton.onTrue(new InstantCommand(() -> drivetrain.resetRotation()));
+        // resetButton.onTrue(new InstantCommand(() -> drivetrain.resetRotation()));
     }
 
     /** Sets the slow mode status by changing the slowModeStatus boolean variable.

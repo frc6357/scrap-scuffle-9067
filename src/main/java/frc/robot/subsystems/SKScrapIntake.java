@@ -14,13 +14,14 @@ import static frc.robot.Ports.ScrapIntakePorts.kIntakeMotorPort;
 
 public class SKScrapIntake extends SubsystemBase{
 
-    SparkMax motor = new SparkMax(kIntakeMotorPort.ID, MotorType.kBrushless);
+    SparkMax motor = new SparkMax(kIntakeMotorPort.ID, MotorType.kBrushed);
     SparkBaseConfig motorConfig = new SparkMaxConfig();
 
     public SKScrapIntake() {
-        motorConfig.inverted(false).idleMode(IdleMode.kCoast).smartCurrentLimit(50);
+        motorConfig.inverted(false).idleMode(IdleMode.kCoast).smartCurrentLimit(40);
         motorConfig.openLoopRampRate(0.2);
 
+        
         motor.configure(motorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
     }
 
@@ -29,7 +30,7 @@ public class SKScrapIntake extends SubsystemBase{
      * @param speed The s0peed to run the motor at
      */
     public void runIntake(double speed) {
-        motor.set(speed);
+        motor.set(-speed);
     }
 
     /**

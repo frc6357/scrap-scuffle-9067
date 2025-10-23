@@ -51,17 +51,17 @@ public class DriveCommand extends Command{
             ChassisSpeeds speeds = new ChassisSpeeds(
                 velX.get(), velY.get(), rotRate.get());
             
-            if(fieldOriented.get() == true) { // Field centric drive requested
-                // Since field-centric was requested, we assume the inputted velocities are field-centric
-                m_drivetrain.setControl(
-                    ChassisSpeeds.fromFieldRelativeSpeeds(speeds, m_drivetrain.getIMURotation())
-                );
-            }
-            else { // Robot centric drive
+            // if(fieldOriented.get() == true) { // Field centric drive requested
+            //     // Since field-centric was requested, we assume the inputted velocities are field-centric
+            //     m_drivetrain.setControl(
+            //         ChassisSpeeds.fromFieldRelativeSpeeds(speeds, m_drivetrain.getIMURotation())
+            //     );
+            // }
+            // else { // Robot centric drive
                 m_drivetrain.setControl(
                     speeds
                 );
-            }
+            // }
         }
 
         @Override

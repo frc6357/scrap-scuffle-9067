@@ -15,12 +15,12 @@ public class RunLauncherCommand extends Command {
 
     @Override
     public void initialize() {
-        m_launcher.runLauncher(speed);
+        
     }
 
     @Override
     public void execute() {
-
+        m_launcher.runLauncher(speed);
     }
 
     @Override

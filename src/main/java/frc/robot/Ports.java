@@ -61,7 +61,7 @@ public class Ports
         //Intake and WATER BUCKET... RELEEAASSE!
         public static final SKTrigger kScrapIntakeTrigger = new SKTrigger(kOperator, kRightBumper.value, BUTTON);
         public static final SKTrigger kSalvageIntakeTrigger = new SKTrigger(kOperator, kLeftBumper.value, BUTTON);
-        public static final SKTrigger kScrapLauncherTrigger = new SKTrigger(kOperator, kRightTrigger.value, AXIS);
+        // public static final SKTrigger kScrapLauncherTrigger = new SKTrigger(kOperator, kRightTrigger.value, AXIS);
         public static final SKTrigger kSalvageEjectTrigger = new SKTrigger(kOperator, kLeftTrigger.value, AXIS);
 
         //Salvage Positions

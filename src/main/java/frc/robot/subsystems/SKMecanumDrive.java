@@ -43,7 +43,7 @@ import com.pathplanner.lib.config.RobotConfig;
 
 
 public class SKMecanumDrive extends SubsystemBase {
-    static Pigeon2 m_pigeon = new Pigeon2(kPigeonPort.ID, kPigeonPort.bus);
+    // static Pigeon2 m_pigeon = new Pigeon2(kPigeonPort.ID, kPigeonPort.bus);
     // Creating kinematics object using the wheel locations.
     MecanumDriveKinematics m_kinematics;
     MecanumDriveOdometry m_odometry;
@@ -67,45 +67,45 @@ public class SKMecanumDrive extends SubsystemBase {
     public SKMecanumDrive() 
         {
 
-        fLConfig.idleMode(IdleMode.kCoast).inverted(false).openLoopRampRate(0.4).smartCurrentLimit(40, 50).apply(driveMotorPIDConfig);
-        fRConfig.idleMode(IdleMode.kCoast).inverted(false).openLoopRampRate(0.4).smartCurrentLimit(40, 50).apply(driveMotorPIDConfig);
-        bLConfig.idleMode(IdleMode.kCoast).inverted(false).openLoopRampRate(0.4).smartCurrentLimit(40, 50).apply(driveMotorPIDConfig);
-        bRConfig.idleMode(IdleMode.kCoast).inverted(false).openLoopRampRate(0.4).smartCurrentLimit(40, 50).apply(driveMotorPIDConfig);
-
+            fLConfig.idleMode(IdleMode.kCoast).inverted(true).openLoopRampRate(0.4).smartCurrentLimit(30, 40);//.apply(driveMotorPIDConfig);
+            fRConfig.idleMode(IdleMode.kCoast).inverted(false).openLoopRampRate(0.4).smartCurrentLimit(30, 40);//.apply(driveMotorPIDConfig);
+            bLConfig.idleMode(IdleMode.kCoast).inverted(true).openLoopRampRate(0.4).smartCurrentLimit(30, 40);//.apply(driveMotorPIDConfig);
+            bRConfig.idleMode(IdleMode.kCoast).inverted(false).openLoopRampRate(0.4).smartCurrentLimit(30, 40);//.apply(driveMotorPIDConfig);
+            
         this.frontLeftMotor.configure(fLConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
         this.frontRightMotor.configure(fRConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
         this.backLeftMotor.configure(bLConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
         this.backRightMotor.configure(bRConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
-        m_pigeon.reset();
+        // m_pigeon.reset();
 
         m_kinematics = new MecanumDriveKinematics(
             kFrontLeftLocation, kFrontRightLocation,
             kBackLeftLocation, kBackRightLocation
         );
 
-        m_odometry = new MecanumDriveOdometry(
-            m_kinematics,
-            getIMURotation(),
-            getWheelPositions(),
-            new Pose2d(0.0, 0.0, new Rotation2d())
-        );
+        // m_odometry = new MecanumDriveOdometry(
+        //     m_kinematics,
+        //     getIMURotation(),
+        //     getWheelPositions(),
+        //     new Pose2d(0.0, 0.0, new Rotation2d())
+        // );
 
-        configureAutoBuilder();
+        // configureAutoBuilder();
     }
 
     @Override
     public void periodic() {
-        m_odometry.update(getIMURotation(), getWheelPositions());
-        m_field.setRobotPose(getRobotPose());
-        SmartDashboard.putData("Field", m_field);
+        // m_odometry.update(getIMURotation(), getWheelPositions());
+        // m_field.setRobotPose(getRobotPose());
+        // SmartDashboard.putData("Field", m_field);
 
-        SmartDashboard.putNumberArray("Motor Speeds", new double[] {
-            frontLeftMotor.getEncoder().getVelocity(),
-            frontRightMotor.getEncoder().getVelocity(),
-            backLeftMotor.getEncoder().getVelocity(),
-            backRightMotor.getEncoder().getVelocity()
-        });
+        // SmartDashboard.putNumberArray("Motor Speeds", new double[] {
+        //     frontLeftMotor.getEncoder().getVelocity(),
+        //     frontRightMotor.getEncoder().getVelocity(),
+        //     backLeftMotor.getEncoder().getVelocity(),
+        //     backRightMotor.getEncoder().getVelocity()
+        // });
     }
 
     /**
@@ -140,53 +140,53 @@ public class SKMecanumDrive extends SubsystemBase {
         backRight.accept(wheelSpeeds.rearRightMetersPerSecond);
     }
 
-    // Uses the pigeon IMU to return the robot's rotation
-    public Rotation2d getIMURotation() {
-        return m_pigeon.getRotation2d();
-    }
+    // // Uses the pigeon IMU to return the robot's rotation
+    // public Rotation2d getIMURotation() {
+    //     return m_pigeon.getRotation2d();
+    // }
 
-    public MecanumDriveWheelPositions getWheelPositions() {
-        return new MecanumDriveWheelPositions(
-            getDistance(frontLeftMotor.getEncoder()), getDistance(frontRightMotor.getEncoder()),
-            getDistance(backLeftMotor.getEncoder()), getDistance(backRightMotor.getEncoder())
-        );
-    }
+    // public MecanumDriveWheelPositions getWheelPositions() {
+    //     return new MecanumDriveWheelPositions(
+    //         getDistance(frontLeftMotor.getEncoder()), getDistance(frontRightMotor.getEncoder()),
+    //         getDistance(backLeftMotor.getEncoder()), getDistance(backRightMotor.getEncoder())
+    //     );
+    // }
 
-    public void resetIMU() {
-        m_pigeon.reset();
-    }
+    // public void resetIMU() {
+    //     m_pigeon.reset();
+    // }
 
     /**
      * Resets both the IMU and odometry rotation
      */
-    public void resetRotation() {
-        m_pigeon.reset();
-        m_odometry.resetRotation(getIMURotation());
-    }
+    // public void resetRotation() {
+    //     m_pigeon.reset();
+    //     m_odometry.resetRotation(getIMURotation());
+    // }
 
-    public void resetPose(Pose2d pose) {
-        m_odometry.resetPose(pose);
-    }
+    // public void resetPose(Pose2d pose) {
+    //     m_odometry.resetPose(pose);
+    // }
 
-    public Pose2d getRobotPose() {
-        return m_odometry.getPoseMeters();
-    }
+    // public Pose2d getRobotPose() {
+    //     return m_odometry.getPoseMeters();
+    // }
 
-    public Rotation2d getRobotRotation() {
-        return getRobotPose().getRotation();
-    }
+    // public Rotation2d getRobotRotation() {
+    //     return getRobotPose().getRotation();
+    // }
 
-    private ChassisSpeeds getChassisSpeeds() {
-        MecanumDriveWheelSpeeds wheelSpeeds = new MecanumDriveWheelSpeeds(
-            // Convert from the motor's rotational velocity to linear velocity by multiplying
-            // by wheel radius
-            frontLeftMotor.getEncoder().getVelocity() * kWheelRadius,
-            frontRightMotor.getEncoder().getVelocity() * kWheelRadius,
-            backLeftMotor.getEncoder().getVelocity() * kWheelRadius,
-            backRightMotor.getEncoder().getVelocity() * kWheelRadius
-        );
-        return m_kinematics.toChassisSpeeds(wheelSpeeds);
-    }
+    // private ChassisSpeeds getChassisSpeeds() {
+    //     MecanumDriveWheelSpeeds wheelSpeeds = new MecanumDriveWheelSpeeds(
+    //         // Convert from the motor's rotational velocity to linear velocity by multiplying
+    //         // by wheel radius
+    //         frontLeftMotor.getEncoder().getVelocity() * kWheelRadius,
+    //         frontRightMotor.getEncoder().getVelocity() * kWheelRadius,
+    //         backLeftMotor.getEncoder().getVelocity() * kWheelRadius,
+    //         backRightMotor.getEncoder().getVelocity() * kWheelRadius
+    //     );
+    //     return m_kinematics.toChassisSpeeds(wheelSpeeds);
+    // }
 
     /**
      * Returns the meters travelled from a wheel motor by multiplying the number of rotations
@@ -194,56 +194,68 @@ public class SKMecanumDrive extends SubsystemBase {
      * @param encoder The encoder to read
      * @return The meters travelled by the wheel's encoder
      */
-    private double getDistance(RelativeEncoder encoder) {
-        return ((encoder.getPosition() / 12.75) * 2 * Math.PI) * kWheelRadius;
+    // private double getDistance(RelativeEncoder encoder) {
+    //     return ((encoder.getPosition() / 12.75) * 2 * Math.PI) * kWheelRadius;
+    // }
+
+    private double toDutyCycle(double speed) {
+        return speed / kMaxWheelSpeed;
     }
 
     private void setFrontLeft(double speed) {
         // Convert from linear speed in m/s to RPM
-        speed = speed / kWheelRadius; // ω = v/r
-        speed *= 60; // Rev/s -> RPM
-        speed *= 12.75; // Wheel speed to motor speed conversion factor
-        frontLeftMotor.getClosedLoopController().setReference(speed, ControlType.kVelocity);
+        // speed = speed / kWheelRadius; // ω = v/r
+        // speed *= 60; // Rev/s -> RPM
+        // speed *= 12.75; // Wheel speed to motor speed conversion factor
+        // frontLeftMotor.getClosedLoopController().setReference(speed, ControlType.kVelocity);
+
+        frontLeftMotor.set(toDutyCycle(speed));
     }
     private void setFrontRight(double speed) {
-        // Convert from linear speed in m/s to RPM
-        speed = speed / kWheelRadius; // ω = v/r
-        speed *= 60; // Rev/s -> RPM
-        speed *= 12.75; // Wheel speed to motor speed conversion factor
-        frontRightMotor.getClosedLoopController().setReference(speed, ControlType.kVelocity);
+        // // Convert from linear speed in m/s to RPM
+        // speed = speed / kWheelRadius; // ω = v/r
+        // speed *= 60; // Rev/s -> RPM
+        // speed *= 12.75; // Wheel speed to motor speed conversion factor
+        // frontRightMotor.getClosedLoopController().setReference(speed, ControlType.kVelocity);
+
+        frontRightMotor.set(toDutyCycle(speed));
     }
     private void setBackLeft(double speed) {
-        // Convert from linear speed in m/s to RPM
-        speed = speed / kWheelRadius; // ω = v/r
-        speed *= 60; // Rev/s -> RPM
-        speed *= 12.75; // Wheel speed to motor speed conversion factor
-        backLeftMotor.getClosedLoopController().setReference(speed, ControlType.kVelocity);
+        // // Convert from linear speed in m/s to RPM
+        // speed = speed / kWheelRadius; // ω = v/r
+        // speed *= 60; // Rev/s -> RPM
+        // speed *= 12.75; // Wheel speed to motor speed conversion factor
+        // backLeftMotor.getClosedLoopController().setReference(speed, ControlType.kVelocity);
+
+        backLeftMotor.set(toDutyCycle(speed));
     }
     private void setBackRight(double speed) {
-        // Convert from linear speed in m/s to RPM
-        speed = speed / kWheelRadius; // ω = v/r
-        speed *= 60; // Rev/s -> RPM
-        speed *= 12.75; // Wheel speed to motor speed conversion factor
-        backRightMotor.getClosedLoopController().setReference(speed, ControlType.kVelocity);
+        // // Convert from linear speed in m/s to RPM
+        // speed = speed / kWheelRadius; // ω = v/r
+        // speed *= 60; // Rev/s -> RPM
+        // speed *= 12.75; // Wheel speed to motor speed conversion factor
+        // backRightMotor.getClosedLoopController().setReference(speed, ControlType.kVelocity);
+
+        backRightMotor.set(toDutyCycle(speed));
     }
 
-    private void configureAutoBuilder() {
-        try {
-            var config = RobotConfig.fromGUISettings();
-            SK25AutoBuilder.configure(
-                this::getRobotPose,   // Supplier of current robot pose
-                this::resetPose,         // Consumer for seeding pose against auto
-                this::getChassisSpeeds, // Supplier of current robot speeds
-                // Consumer of ChassisSpeeds and feedforwards to drive the robot
-                (speeds, feedforwards) -> setControl(speeds),
-                pathConfig,
-                config,
-                // Assume the path needs to be flipped for Red vs Blue, this is normally the case
-                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
-                this // Subsystem for requirements
-            );
-        } catch (Exception ex) {
-            DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
-        }
-    }
+    // private void configureAutoBuilder() {
+    //     try {
+    //         var config = RobotConfig.fromGUISettings();
+    //         SK25AutoBuilder.configure(
+    //             this::getRobotPose,   // Supplier of current robot pose
+    //             this::resetPose,         // Consumer for seeding pose against auto
+    //             this::getChassisSpeeds, // Supplier of current robot speeds
+    //             // Consumer of ChassisSpeeds and feedforwards to drive the robot
+    //             (speeds, feedforwards) -> setControl(speeds),
+    //             pathConfig,
+    //             config,
+    //             // Assume the path needs to be flipped for Red vs Blue, this is normally the case
+    //             () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+    //             this // Subsystem for requirements
+    //         );
+    //     } catch (Exception ex) {
+    //         DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
+    //     }
+    // }
 }
